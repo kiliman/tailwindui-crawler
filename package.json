@@ -1,0 +1,18 @@
+{
+  "name": "tailwindui-crawler",
+  "version": "1.0.0",
+  "description": "Download TailwindUI components",
+  "main": "index.js",
+  "author": "kiliman <kiliman@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^1.19.1"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "dotenv": "^8.2.0",
+    "fetch-cookie": "^0.7.3",
+    "form-urlencoded": "^4.1.3",
+    "node-fetch": "^2.6.0"
+  }
+}
