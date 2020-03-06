@@ -1,5 +1,7 @@
 # tailwindui-crawler
 
+<img src="tailwindui-crawler.png">
+
 This script will crawl the https://tailwindui.com website and download all the
 component HTML to the `./output` folder.
 

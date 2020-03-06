@@ -1,3 +1,4 @@
 node_modules
 output
 .env
+.DS_Store
