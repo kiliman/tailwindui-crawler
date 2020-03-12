@@ -2,6 +2,7 @@ require('dotenv').config()
 const fs = require('fs')
 const nodeFetch = require('node-fetch')
 const fetch = require('fetch-cookie/node-fetch')(nodeFetch)
+// @ts-ignore
 const formurlencoded = require('form-urlencoded').default
 const cheerio = require('cheerio')
 const rootUrl = 'https://tailwindui.com'
@@ -36,7 +37,7 @@ const processComponentPage = async url => {
       fs.mkdirSync(dir, { recursive: true })
     }
     const container = $(snippet.parentNode.parentNode.parentNode)
-    const title = $('h3', container, $).text()
+    const title = $('h3', container).text()
     const code = $(snippet).text()
     const path = `${dir}/${cleanFilename(title)}.html`
     console.log(`Writing ${path}...`)
@@ -65,7 +66,7 @@ const cleanFilename = filename => filename.toLowerCase().replace(/[^\w.]/g, '_')
 
   await login()
 
-  const $ = await downloadPage('/components', false)
+  const $ = await downloadPage('/components')
   const links = $('.grid a')
   for (let i = 0; i < links.length; i++) {
     const link = links[i]
