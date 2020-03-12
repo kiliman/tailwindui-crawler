@@ -9,11 +9,12 @@ component HTML to the `./output` folder.
 
 To install, clone this repo and run `yarn` to pull down the dependencies.
 
-Then create a `.env` file with your email and password.
+Then create a `.env` file with your email, password, and optional output folder.
 
 ```ini
 EMAIL=youremail
 PASSWORD=yourpassword
+OUTPUT=/path/to/output #optional, defaults to ./output
 ```
 
 Then finally, run `node index.js`

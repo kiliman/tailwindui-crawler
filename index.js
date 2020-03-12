@@ -6,7 +6,7 @@ const fetch = require('fetch-cookie/node-fetch')(nodeFetch)
 const formurlencoded = require('form-urlencoded').default
 const cheerio = require('cheerio')
 const rootUrl = 'https://tailwindui.com'
-const output = './output'
+const output = process.env.OUTPUT || './output'
 
 const downloadPage = async url => {
   const response = await fetch(rootUrl + url)
