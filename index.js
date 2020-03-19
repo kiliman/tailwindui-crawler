@@ -8,6 +8,8 @@ const cheerio = require('cheerio')
 const rootUrl = 'https://tailwindui.com'
 const output = process.env.OUTPUT || './output'
 
+const tui = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tailwindcss/ui@latest/dist/tailwind-ui.min.css">'
+
 const downloadPage = async url => {
   const response = await fetch(rootUrl + url)
   const html = await response.text()
@@ -38,7 +40,7 @@ const processComponentPage = async url => {
     }
     const container = $(snippet.parentNode.parentNode.parentNode)
     const title = $('h3', container).text()
-    const code = $(snippet).text()
+    const code = tui + '\n\n' + $(snippet).text()
     const path = `${dir}/${cleanFilename(title)}.html`
     console.log(`Writing ${path}...`)
     fs.writeFileSync(path, code)
@@ -57,7 +59,7 @@ const login = async () => {
   })
 }
 
-const cleanFilename = filename => filename.toLowerCase().replace(/[^\w.]/g, '_')
+const cleanFilename = filename => filename.toLowerCase().replace(/[^\w.]/g, '_').replace(/^_+|_+$/g, '')
 
 ;(async function() {
   if (!fs.existsSync(output)) {
