@@ -5,7 +5,13 @@
   "main": "index.js",
   "author": "kiliman <kiliman@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "contributors:add": "all-contributors add",
+    "contributors:generate": "all-contributors generate",
+    "start": "node index.js"
+  },
   "devDependencies": {
+    "all-contributors-cli": "^6.14.0",
     "prettier": "^1.19.1"
   },
   "dependencies": {

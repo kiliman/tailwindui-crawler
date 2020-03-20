@@ -1,0 +1,33 @@
+{
+  "projectName": "tailwindui-crawler",
+  "projectOwner": "kiliman",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "kiliman",
+      "name": "Kiliman",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/47168?v=4",
+      "profile": "https://github.com/kiliman",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "sonovice",
+      "name": "Simon Waloschek",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/8217108?v=4",
+      "profile": "http://www.cemfi.de",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7
+}
