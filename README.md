@@ -35,6 +35,11 @@ private repo, and by running this periodically, you can see exactly which files 
 or changed. Hopefully, some time in the future, they will open up a private repo for those
 that have purchased the library.
 
+## 🚀 Update v1.1.0
+
+The HTML files now include a link to the `tailwindui.css` file so you can easily view the
+styled component in the browser. Thanks to [Simon Waloschek](https://github.com/sonovice) for the change.
+
 ## ⚠️ Warning
 
 NOTE: Since this script is essentially screen scraping, there's the potential
