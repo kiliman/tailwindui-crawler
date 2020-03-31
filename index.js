@@ -8,7 +8,8 @@ const cheerio = require('cheerio')
 const rootUrl = 'https://tailwindui.com'
 const output = process.env.OUTPUT || './output'
 
-const tui = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tailwindcss/ui@latest/dist/tailwind-ui.min.css">'
+const tui =
+  '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tailwindcss/ui@latest/dist/tailwind-ui.min.css">'
 
 const downloadPage = async url => {
   const response = await fetch(rootUrl + url)
