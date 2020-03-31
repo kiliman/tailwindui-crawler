@@ -51,12 +51,16 @@ const login = async () => {
   const $ = await downloadPage('/login')
   const _token = $('input[name="_token"]').val()
 
-  await postData('/login', {
+  const response = await postData('/login', {
     _token,
     email: process.env.EMAIL,
     password: process.env.PASSWORD,
     remember: 'true',
   })
+  const html = await response.text()
+  return /\<title\>Redirecting to https:\/\/tailwindui\.com\<\/title\>/.test(
+    html,
+  )
 }
 
 const cleanFilename = filename => filename.toLowerCase().replace(/[^\w.]/g, '_').replace(/^_+|_+$/g, '')
@@ -66,8 +70,13 @@ const cleanFilename = filename => filename.toLowerCase().replace(/[^\w.]/g, '_')
     fs.mkdirSync(output)
   }
 
-  await login()
-
+  console.log('Logging into tailwindui.com...')
+  const success = await login()
+  if (!success) {
+    console.log('Invalid credentials')
+    return 1
+  }
+  console.log('Success!')
   const $ = await downloadPage('/components')
   const links = $('.grid a')
   for (let i = 0; i < links.length; i++) {
@@ -77,4 +86,5 @@ const cleanFilename = filename => filename.toLowerCase().replace(/[^\w.]/g, '_')
     await processComponentPage(url)
     console.log()
   }
+  return 0
 })()
