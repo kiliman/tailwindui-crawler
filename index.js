@@ -39,7 +39,9 @@ const processComponentPage = async url => {
       fs.mkdirSync(dir, { recursive: true })
     }
     const container = $(snippet.parentNode.parentNode.parentNode)
-    const title = $('h3', container).text()
+    const title = $('h3', container)
+      .text()
+      .trim()
     const code = tui + '\n\n' + $(snippet).text()
     const path = `${dir}/${cleanFilename(title)}.html`
     console.log(`Writing ${path}...`)
@@ -63,7 +65,7 @@ const login = async () => {
   )
 }
 
-const cleanFilename = filename => filename.toLowerCase().replace(/[^\w.]/g, '_').replace(/^_+|_+$/g, '')
+const cleanFilename = filename => filename.toLowerCase().replace(/[^\w.]/g, '_')
 
 ;(async function() {
   if (!fs.existsSync(output)) {
