@@ -8,8 +8,22 @@ const cheerio = require('cheerio')
 const rootUrl = 'https://tailwindui.com'
 const output = process.env.OUTPUT || './output'
 
-const tui =
-  '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tailwindcss/ui@latest/dist/tailwind-ui.min.css">'
+const defaultStyles = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tailwindcss/ui@latest/dist/tailwind-ui.min.css">'
+
+let interFont, fontFamilySans
+if (process.env.USE_INTER) {
+  const defaultFontFamily = 'system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"'
+  interFont = '<link rel="stylesheet" href="https://rsms.me/inter/inter.css">'
+  fontFamilySans = `
+<style type="text/css">
+  html, .font-sans{font-family:"Inter var",${defaultFontFamily}}
+  .sm\\:font-sans{font-family:"Inter var",${defaultFontFamily}}
+  .md\\:font-sans{font-family:"Inter var",${defaultFontFamily}}
+  .lg\\:font-sans{font-family:"Inter var",${defaultFontFamily}}
+  .xl\\:font-sans{font-family:"Inter var",${defaultFontFamily}}
+</style>
+`
+}
 
 const downloadPage = async url => {
   const response = await fetch(rootUrl + url)
@@ -30,9 +44,8 @@ const postData = async (url, data) =>
 const processComponentPage = async url => {
   const $ = await downloadPage(url)
   const snippets = $('textarea')
-  console.log(
-    `* Found ${snippets.length} snippet${snippets.length === 1 ? '' : 's'}`,
-  )
+  console.log(`* Found ${snippets.length} snippet${snippets.length === 1 ? '' : 's'}`)
+  
   for (let i = 0; i < snippets.length; i++) {
     const snippet = snippets[i]
     const dir = `${output}${url}`
@@ -43,7 +56,14 @@ const processComponentPage = async url => {
     const title = $('h3', container)
       .text()
       .trim()
-    const code = tui + '\n\n' + $(snippet).text()
+
+    let code
+    if (process.env.USE_INTER) {
+      code = `${defaultStyles}\n${interFont}\n${fontFamilySans}\n${$(snippet).text()}`
+    } else {
+      code = `${defaultStyles}\n\n${$(snippet).text()}`
+    }
+
     const path = `${dir}/${cleanFilename(title)}.html`
     console.log(`Writing ${path}...`)
     fs.writeFileSync(path, code)
@@ -68,7 +88,7 @@ const login = async () => {
 
 const cleanFilename = filename => filename.toLowerCase().replace(/[^\w.]/g, '_')
 
-;(async function() {
+;(async function () {
   if (!fs.existsSync(output)) {
     fs.mkdirSync(output)
   }

@@ -21,6 +21,7 @@ Then create a `.env` file with your email, password, and optional output folder.
 EMAIL=youremail
 PASSWORD=yourpassword
 OUTPUT=/path/to/output #optional, defaults to ./output
+USE_INTER=1 #optional, enables Inter font
 ```
 
 Then finally, run `node index.js`
