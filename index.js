@@ -57,11 +57,14 @@ const processComponentPage = async url => {
       .text()
       .trim()
 
+    // Fix logo URL
+    const snippetText = $(snippet).text().replace("/img/logos/","https://tailwindui.com/img/logos/")
+
     let code
     if (process.env.USE_INTER) {
-      code = `${defaultStyles}\n${interFont}\n${fontFamilySans}\n${$(snippet).text()}`
+      code = `${defaultStyles}\n${interFont}\n${fontFamilySans}\n${snippetText}`
     } else {
-      code = `${defaultStyles}\n\n${$(snippet).text()}`
+      code = `${defaultStyles}\n\n${snippetText}`
     }
 
     const path = `${dir}/${cleanFilename(title)}.html`
