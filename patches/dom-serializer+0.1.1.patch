@@ -1,0 +1,48 @@
+diff --git a/node_modules/dom-serializer/index.js b/node_modules/dom-serializer/index.js
+index 4f41e8f..8b8500a 100644
+--- a/node_modules/dom-serializer/index.js
++++ b/node_modules/dom-serializer/index.js
+@@ -33,7 +33,7 @@ function formatAttrs(attributes, opts) {
+     }
+ 
+     output += key;
+-    if ((value !== null && value !== '') || opts.xmlMode) {
++    if ((value !== null && value !== '') || (opts.xmlMode && !/defer/.test(key))) {
+         output += '="' + (opts.decodeEntities ? entities.encodeXML(value) : value) + '"';
+     }
+   }
+@@ -96,7 +96,7 @@ var render = module.exports = function(dom, opts) {
+ 
+ function renderTag(elem, opts) {
+   // Handle SVG
+-  if (elem.name === "svg") opts = {decodeEntities: opts.decodeEntities, xmlMode: true};
++  if (elem.name === "svg") opts = Object.assign(opts, {decodeEntities: opts.decodeEntities, xmlMode: true});
+ 
+   var tag = '<' + elem.name,
+       attribs = formatAttrs(elem.attribs, opts);
+@@ -109,15 +109,23 @@ function renderTag(elem, opts) {
+     opts.xmlMode
+     && (!elem.children || elem.children.length === 0)
+   ) {
+-    tag += '/>';
++    if (elem.name === 'script') {
++      tag += '></script>'
++    } else {
++      if (opts.spaceBeforeSelfClose) tag += ' ';
++      tag += '/>';
++    }
++    if (/link/.test(elem.name)) tag += '\n'
+   } else {
+     tag += '>';
++    if (/html|head|body/.test(elem.name)) tag += '\n'
+     if (elem.children) {
+       tag += render(elem.children, opts);
+     }
+-
++    if (/body/.test(elem.name)) tag += '\n'
+     if (!singleTag[elem.name] || opts.xmlMode) {
+       tag += '</' + elem.name + '>';
++      if (/html|head|body/.test(elem.name)) tag += '\n'
+     }
+   }
+ 
