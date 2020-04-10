@@ -61,14 +61,14 @@ The following transformers are availble:
 - `prefixSrc` - adds `https://tailwindui.com` to any img src attribute that needs it
 - `useInter` - adds link to Inter font css and styles
 - `convertReact` - converts HTML component into React/JSX-compatible syntax
-  - Use .env key `CONVERTREACT_OUTPUT` to specify which folder to save the React files to
+  - Use `.env` key `CONVERTREACT_OUTPUT` to specify which folder to save the React files to
     (defaults to currently configured `OUTPUT`). You can also use `$OUTPUT` to expand current
-    value. For example: `CONVERTREACT_OUTPUT=$OUTPUT/react` will set the value to value of `OUTPUT` plus `/react'
+    value. For example: `CONVERTREACT_OUTPUT=$OUTPUT/react` will set the value to value of `OUTPUT` plus `/react`
   - This transformer will create a folder for each component with an `index.js` file (this is the
-    React component) and a `index.html` page which is a simple wrapper that will load the React component
+    React component) and an `index.html` page which is a simple wrapper that will load the React component
     to verify it is working. NOTE: The transformer does not currently update the `alpine.js` code, so
-    the component doesn't not support state or interactivity. However, that is on the TODO list.
-  - You can use `Parcel` to test the React component.
+    the component does not support state or interactivity. However, that is on the TODO list.
+  - You can use [Parcel](https://parceljs.org) to test the React component.
 
 ### 🗂 Index page
 
@@ -80,6 +80,12 @@ to view the index.
 yarn add -g serve
 serve
 ```
+
+<img src="./images/index-main.png" alt="Main index page"/>
+
+<img src="./images/index-section.png" alt="Components section page"/>
+
+<img src="./images/index-component-code.png" alt="Code for component"/>
 
 You can view each component and the highlighted code. Currently resizing and copying code is not supported.
 
