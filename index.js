@@ -156,7 +156,7 @@ const login = async () => {
       console.log()
     }
   } catch (ex) {
-    console.log(ex)
+    console.error('‼️  ', ex)
     return 1
   }
   console.log('🏁  Done!')
