@@ -70,7 +70,7 @@ module.exports.buildIndexPage = function(output, library) {
     `
   })
   html += `</main></body></html>`
-  console.log(`📝  Writing index.html...`)
+  console.log(`📝  Writing index.html`)
   fs.writeFileSync(`${output}/index.html`, html)
 }
 
@@ -250,6 +250,6 @@ const buildSectionPage = (
 </script>
 </body>
 </html>`
-  console.log(`📝  Writing ${section.url}...`)
+  console.log(`📝  Writing ${section.url}`)
   fs.writeFileSync(`${output}${section.url}`, html)
 }
