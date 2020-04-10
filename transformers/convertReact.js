@@ -1,5 +1,4 @@
 const { ensureDirExists, camelCase } = require('../utils')
-const { dirname, basename } = require('path')
 
 module.exports = function($, { output, title, path, fs }) {
   let code = $('body')
