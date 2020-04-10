@@ -48,9 +48,9 @@ const processComponentPage = async url => {
     .text()
     .trim()
 
-  const transformerNames = process.env.TRANSFORMERS.split(',')
+  const transformerNames = (process.env.TRANSFORMERS || '').split(',')
   const transformers = []
-  transformerNames.forEach(name => {
+  transformerNames.filter(Boolean).forEach(name => {
     transformers.push(require(`./transformers/${name}`))
   })
 
