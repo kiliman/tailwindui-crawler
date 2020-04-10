@@ -70,6 +70,9 @@ The following transformers are availble:
     the component does not support state or interactivity. However, that is on the TODO list.
   - You can use [Parcel](https://parceljs.org) to test the React component.
   - Based on [gist](https://gist.github.com/RobinMalfait/a90e8651196c273dfa51eec0f43e1676) by [@RobinMalfait](https://github.com/RobinMalfait)
+- `stripAlpine` - removes all the Alpine.js attributes from the markup
+  - Use `.env` key `STRIPALPINE_OUTPUT` to specify which folder to save the files to
+  - You must specify the output folder to ensure the raw HTML files are not overwritten
 
 ### 🗂 Index page
 
@@ -111,8 +114,9 @@ EMAIL=******
 PASSWORD=******
 OUTPUT=$HOME/Projects/oss/tailwindui
 BUILDINDEX=1
-TRANSFORMERS=addTailwindCss,prefixSrc,useInter,convertReact
+TRANSFORMERS=addTailwindCss,prefixSrc,useInter,convertReact,stripAlpine
 CONVERTREACT_OUTPUT=$OUTPUT/react
+STRIPALPINE_OUTPUT=$OUTPUT/no-alpine
 ```
 
 ## 🚦 Upgrading to v2.
