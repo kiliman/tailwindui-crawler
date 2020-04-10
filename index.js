@@ -8,6 +8,7 @@ const formurlencoded = require('form-urlencoded').default
 const cheerio = require('cheerio')
 const serialize = require('dom-serializer')
 const { dirname, basename } = require('path')
+const { buildIndexPage } = require('./build')
 const { mergeDeep, cleanFilename, ensureDirExists } = require('./utils')
 
 const rootUrl = 'https://tailwindui.com'
@@ -56,7 +57,7 @@ const processComponentPage = async url => {
   const components = []
   const snippets = $('textarea')
   console.log(
-    `* Found ${snippets.length} snippet${snippets.length === 1 ? '' : 's'}`,
+    `🔍  Found ${snippets.length} component${snippets.length === 1 ? '' : 's'}`,
   )
   for (let i = 0; i < snippets.length; i++) {
     const snippet = snippets[i]
@@ -90,9 +91,10 @@ const processComponentPage = async url => {
     const dir = `${output}${dirname(path)}`
     ensureDirExists(dir)
 
+    components.push({ hash, title, url: `${url}/${filename}.html` })
+
     const filePath = `${dir}/${basename(path)}.html`
-    components.push({ hash, title, url: filePath })
-    console.log(`Writing ${filePath}...`)
+    console.log(`📝  Writing ${filename}.html`)
     fs.writeFileSync(filePath, code)
   }
   return {
@@ -127,29 +129,36 @@ const login = async () => {
   try {
     ensureDirExists(output)
 
-    console.log('Logging into tailwindui.com...')
+    console.log('🔐  Logging into tailwindui.com...')
     const success = await login()
     if (!success) {
-      console.log('Invalid credentials')
+      console.log('🚫  Invalid credentials')
       return 1
     }
-    console.log('Success!')
+    console.log('✅  Success!\n')
 
-    const library = {}
+    console.log(`🗂   Output is ${output}`)
     const $ = await downloadPage('/components')
+    const library = {}
     const links = $('.grid a')
-    const count = 1 //links.length
+    const count = links.length
     for (let i = 0; i < count; i++) {
       const link = links[i]
       const url = $(link).attr('href')
-      console.log(`Processing ${url}...`)
+      console.log(`⏳  Processing ${url}...`)
       const components = await processComponentPage(url)
       mergeDeep(library, components)
+      console.log()
+    }
+    if (process.env.BUILDINDEX === '1') {
+      console.log(`⏳  Building index pages...`)
+      buildIndexPage(output, library)
       console.log()
     }
   } catch (ex) {
     console.log(ex)
     return 1
   }
+  console.log('🏁  Done!')
   return 0
 })()
