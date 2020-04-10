@@ -1,7 +1,7 @@
 const { ensureDirExists, camelCase } = require('../utils')
 const { dirname, basename } = require('path')
 
-module.exports = function($, { output, path, fs }) {
+module.exports = function($, { output, title, path, fs }) {
   let code = $('body')
     .html()
     // Replace `class=` with `className=`
@@ -80,6 +80,7 @@ module.exports = function($, { output, path, fs }) {
   const dir = `${process.env.CONVERTREACT_OUTPUT || output}${path}`
   ensureDirExists(dir)
   const filePath = `${dir}/index.js`
+  console.log(`⚛️   Writing React component for "${title}"`)
   fs.writeFileSync(filePath, code)
 
   const indexFilePath = `${dir}/index.html`
