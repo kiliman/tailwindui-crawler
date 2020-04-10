@@ -82,17 +82,25 @@ yarn add -g serve
 serve
 ```
 
+---
+
 #### Main index page
 
-<img src="./images/index-main.png" alt="Main index page" style="box-shadow: 5px 5px 25px 5px rgba(0,0,0,0.5);"/>
+<img src="./images/index-main.png" alt="Main index page"/>
+
+---
 
 #### Component section page
 
-<img src="./images/index-section.png" alt="Components section page" style="box-shadow: 5px 5px 25px 5px rgba(0,0,0,0.5);"/>
+<img src="./images/index-section.png" alt="Components section page"/>
+
+---
 
 #### Click button to view syntax highlighted code
 
-<img src="./images/index-component-code.png" alt="Code for component" style="box-shadow: 5px 5px 25px 5px rgba(0,0,0,0.5);"/>
+<img src="./images/index-component-code.png" alt="Code for component"/>
+
+---
 
 You can view each component and the highlighted code. Currently resizing and copying code is not supported.
 
