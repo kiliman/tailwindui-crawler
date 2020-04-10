@@ -127,9 +127,15 @@ const login = async () => {
   try {
     ensureDirExists(output)
 
-    await login()
-    const library = {}
+    console.log('Logging into tailwindui.com...')
+    const success = await login()
+    if (!success) {
+      console.log('Invalid credentials')
+      return 1
+    }
+    console.log('Success!')
 
+    const library = {}
     const $ = await downloadPage('/components')
     const links = $('.grid a')
     const count = 1 //links.length
