@@ -1,7 +1,9 @@
 # tailwindui-crawler
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
+
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <img src="./images/tailwindui-crawler.png">
@@ -67,6 +69,7 @@ The following transformers are availble:
     to verify it is working. NOTE: The transformer does not currently update the `alpine.js` code, so
     the component does not support state or interactivity. However, that is on the TODO list.
   - You can use [Parcel](https://parceljs.org) to test the React component.
+  - Based on [gist](https://gist.github.com/RobinMalfait/a90e8651196c273dfa51eec0f43e1676) by [@RobinMalfait](https://github.com/RobinMalfait)
 
 ### 🗂 Index page
 
@@ -79,11 +82,17 @@ yarn add -g serve
 serve
 ```
 
-<img src="./images/index-main.png" alt="Main index page"/>
+#### Main index page
 
-<img src="./images/index-section.png" alt="Components section page"/>
+<img src="./images/index-main.png" alt="Main index page" style="box-shadow: 5px 5px 25px 5px rgba(0,0,0,0.5);"/>
 
-<img src="./images/index-component-code.png" alt="Code for component"/>
+#### Component section page
+
+<img src="./images/index-section.png" alt="Components section page" style="box-shadow: 5px 5px 25px 5px rgba(0,0,0,0.5);"/>
+
+#### Click button to view syntax highlighted code
+
+<img src="./images/index-component-code.png" alt="Code for component" style="box-shadow: 5px 5px 25px 5px rgba(0,0,0,0.5);"/>
 
 You can view each component and the highlighted code. Currently resizing and copying code is not supported.
 
@@ -129,11 +138,13 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/kiliman"><img src="https://avatars3.githubusercontent.com/u/47168?v=4&size=100" width="100px;" alt=""/><br /><sub><b>Kiliman</b></sub></a></td>
     <td align="center"><a href="http://www.cemfi.de"><img src="https://avatars0.githubusercontent.com/u/8217108?v=4&size=100" width="100px;" alt=""/><br /><sub><b>Simon Waloschek</b></sub></a></td>
     <td align="center"><a href="https://github.com/nawok"><img src="https://avatars3.githubusercontent.com/u/159773?v=4&size=100" width="100px;" alt=""/><br /><sub><b>Pavel Fomchenkov</b></sub></a></td>
+    <td align="center"><a href="https://robinmalfait.com"><img src="https://avatars2.githubusercontent.com/u/1834413?v=4&size=100" width="100px;" alt=""/><br /><sub><b>Robin Malfait</b></sub></a></td>
   </tr>
 </table>
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
