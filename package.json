@@ -1,6 +1,6 @@
 {
   "name": "tailwindui-crawler",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Download TailwindUI components",
   "main": "index.js",
   "author": "kiliman <kiliman@gmail.com>",
