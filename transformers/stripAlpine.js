@@ -18,6 +18,6 @@ module.exports = function($, { output, path, fs }) {
   const dir = `${process.env.STRIPALPINE_OUTPUT}${dirname(path)}`
   ensureDirExists(dir)
   const filePath = `${dir}/${basename(path)}.html`
-  console.log(`⛰   Writing Alpine-stripped ${basename(path)}.html"`)
+  console.log(`⛰   Writing Alpine-stripped ${basename(path)}.html`)
   fs.writeFileSync(filePath, code)
 }
