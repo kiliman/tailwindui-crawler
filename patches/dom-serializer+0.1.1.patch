@@ -1,5 +1,5 @@
 diff --git a/node_modules/dom-serializer/index.js b/node_modules/dom-serializer/index.js
-index 4f41e8f..5c09da7 100644
+index 4f41e8f..2dd69de 100644
 --- a/node_modules/dom-serializer/index.js
 +++ b/node_modules/dom-serializer/index.js
 @@ -33,8 +33,8 @@ function formatAttrs(attributes, opts) {
@@ -92,7 +92,7 @@ index 4f41e8f..5c09da7 100644
 +      if (opts.spaceBeforeSelfClose) tag += ' ';
 +      tag += '/>';
 +    }
-+    if (/link/.test(elem.name)) tag += '\n'
++    if (/link|meta/.test(elem.name)) tag += '\n'
    } else {
      tag += '>';
 +    if (/html|head|body/.test(elem.name)) tag += '\n'
