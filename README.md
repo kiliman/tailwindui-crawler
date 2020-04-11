@@ -1,9 +1,7 @@
 # tailwindui-crawler
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-
-[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
-
+[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <img src="./images/tailwindui-crawler.png">
@@ -60,6 +58,11 @@ The following transformers are availble:
 - `addTailwindCss` - adds link to tailwindui.css
 - `prefixSrc` - adds `https://tailwindui.com` to any img src attribute that needs it
 - `useInter` - adds link to Inter font css and styles
+- `convertVue` - converts HTML component into a Vue component
+  - Use `.env` key `VUE_OUTPUT` to specify which folder to save the React files to
+    (defaults to currently configured `OUTPUT`). You can also use `$OUTPUT` to expand current
+    value. For example: `VUE_OUTPUT=$OUTPUT/vue` will set the value to value of `OUTPUT` plus `/vue`
+  - This transformer will create a Vue component for each Tailwind UI component. This components may need some adjustements, but should in most cases be ready to go. An index script is not included, so the components can't be viewed in the browser yet.
 - `convertReact` - converts HTML component into React/JSX-compatible syntax
   - Use `.env` key `CONVERTREACT_OUTPUT` to specify which folder to save the React files to
     (defaults to currently configured `OUTPUT`). You can also use `$OUTPUT` to expand current
@@ -76,8 +79,7 @@ The following transformers are availble:
 
 ### 🗂 Index page
 
-You can set the `.env` key `BUILDINDEX=1` to have the crawler generate an index file similar to the
-components page on tailwindui.com. Install and run the [serve](https://www.npmjs.com/package/serve) package
+You can set the `.env` key `BUILDINDEX=1` to have the crawler generate an index file similar to the components page on tailwindui.com. Install and run the [serve](https://www.npmjs.com/package/serve) package
 to view the index.
 
 ```bash
@@ -115,6 +117,7 @@ PASSWORD=******
 OUTPUT=$HOME/Projects/oss/tailwindui
 BUILDINDEX=1
 TRANSFORMERS=addTailwindCss,prefixSrc,useInter,convertReact,stripAlpine
+VUE_OUTPUT=$OUTPUT/vue
 CONVERTREACT_OUTPUT=$OUTPUT/react
 STRIPALPINE_OUTPUT=$OUTPUT/no-alpine
 ```
@@ -151,12 +154,12 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://www.cemfi.de"><img src="https://avatars0.githubusercontent.com/u/8217108?v=4&size=100" width="100px;" alt=""/><br /><sub><b>Simon Waloschek</b></sub></a></td>
     <td align="center"><a href="https://github.com/nawok"><img src="https://avatars3.githubusercontent.com/u/159773?v=4&size=100" width="100px;" alt=""/><br /><sub><b>Pavel Fomchenkov</b></sub></a></td>
     <td align="center"><a href="https://robinmalfait.com"><img src="https://avatars2.githubusercontent.com/u/1834413?v=4&size=100" width="100px;" alt=""/><br /><sub><b>Robin Malfait</b></sub></a></td>
+    <td align="center"><a href="https://miguelpiedrafita.com"><img src="https://avatars0.githubusercontent.com/u/23558090?v=4&size=100" width="100px;" alt=""/><br /><sub><b>Miguel Piedrafita</b></sub></a></td>
   </tr>
 </table>
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
-
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
