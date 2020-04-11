@@ -7,6 +7,10 @@ const fetch = require('fetch-cookie/node-fetch')(nodeFetch)
 const formurlencoded = require('form-urlencoded').default
 const cheerio = require('cheerio')
 const serialize = require('dom-serializer')
+// polyfill matchAll for node versions < 12
+const matchAll = require('string.prototype.matchall')
+matchAll.shim()
+
 const { dirname, basename } = require('path')
 const { buildIndexPage } = require('./build')
 const { mergeDeep, cleanFilename, ensureDirExists } = require('./utils')
