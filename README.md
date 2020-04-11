@@ -59,7 +59,7 @@ The following transformers are availble:
 - `prefixSrc` - adds `https://tailwindui.com` to any img src attribute that needs it
 - `useInter` - adds link to Inter font css and styles
 - `convertVue` - converts HTML component into a Vue component
-  - Use `.env` key `VUE_OUTPUT` to specify which folder to save the React files to
+  - Use `.env` key `VUE_OUTPUT` to specify which folder to save the Vue files to
     (defaults to currently configured `OUTPUT`). You can also use `$OUTPUT` to expand current
     value. For example: `VUE_OUTPUT=$OUTPUT/vue` will set the value to value of `OUTPUT` plus `/vue`
   - This transformer will create a Vue component for each Tailwind UI component. This components may need some adjustements, but should in most cases be ready to go. An index script is not included, so the components can't be viewed in the browser yet.
