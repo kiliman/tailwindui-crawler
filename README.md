@@ -1,12 +1,14 @@
 # tailwindui-crawler
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <img src="./images/tailwindui-crawler.png">
 
-This script will crawl the tailwindui.com website and download all the
+This script will crawl the [tailwindui.com](https://tailwindui.com) website and download all the
 component HTML to the `./output` folder.
 
 ## 🛠 How to use
@@ -23,9 +25,13 @@ TRANSFORMERS=... # comma-delimited list of transformers (see below)
 BUILDINDEX=(0 | 1)  # generate index file to view components offline
 ```
 
+> NOTE: The tool uses [dotenv-expand](https://github.com/motdotla/dotenv-expand) to support variable expansion like `$HOME/path/to/output`
+> so if your password or any other value includes a `$`, make sure you add a `\` (backslash) to
+> escape the `$`. For example, `PASSWORD=p@\$\$w0rd`
+
 Then finally, run `yarn start`
 
-The script will login to tailwindui.com with your credentials, and download all the
+The script will login to [tailwindui.com](https://tailwindui.com) with your credentials, and download all the
 components as individual HTML files in the `./output` folder.
 
 ## 🤔 What's it for?
@@ -40,7 +46,7 @@ that have purchased the library.
 The crawler has been re-written to make it easier to update the processing pipeline by simply
 adding a new transformer function.
 
-It also adds the ability to generate an index page that emulates the tailwindui.com website
+It also adds the ability to generate an index page that emulates the [tailwindui.com](https://tailwindui.com) website
 so you can browse components offline.
 
 ### 🔄 Transformers
@@ -79,7 +85,8 @@ The following transformers are availble:
 
 ### 🗂 Index page
 
-You can set the `.env` key `BUILDINDEX=1` to have the crawler generate an index file similar to the components page on tailwindui.com. Install and run the [serve](https://www.npmjs.com/package/serve) package
+You can set the `.env` key `BUILDINDEX=1` to have the crawler generate an index file similar to the components
+page on [tailwindui.com](https://tailwindui.com). Install and run the [serve](https://www.npmjs.com/package/serve) package
 to view the index.
 
 ```bash
@@ -160,6 +167,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
