@@ -21,9 +21,18 @@ Then create a `.env` file with your email, password, and optional output folder.
 EMAIL=youremail
 PASSWORD=yourpassword
 OUTPUT=/path/to/output # optional, defaults to ./output
+HTMLMODE=alpine|comments # save HTML with alpine (default) or comments
 TRANSFORMERS=... # comma-delimited list of transformers (see below)
 BUILDINDEX=(0 | 1)  # generate index file to view components offline
 ```
+
+### ✨ New in v2.3
+
+The Tailwind UI components have removed the Alpine.js code from the HTML. The
+crawler now includes a `HTMLMODE` setting to include either the Alpine.js code
+(`alpine` default) or download with HTML comments (`comments`).
+
+There are also new transformers to change the color and logo of the HTML components.
 
 > NOTE: The tool uses [dotenv-expand](https://github.com/motdotla/dotenv-expand) to support variable expansion like `$HOME/path/to/output`
 > so if your password or any other value includes a `$`, make sure you add a `\` (backslash) to
@@ -61,27 +70,40 @@ list of transformers. The crawler will call each transformer in the specified or
 
 The following transformers are availble:
 
-- `addTailwindCss` - adds link to tailwindui.css
-- `prefixSrc` - adds `https://tailwindui.com` to any img src attribute that needs it
-- `useInter` - adds link to Inter font css and styles
-- `convertVue` - converts HTML component into a Vue component
-  - Use `.env` key `VUE_OUTPUT` to specify which folder to save the Vue files to
-    (defaults to currently configured `OUTPUT`). You can also use `$OUTPUT` to expand current
-    value. For example: `VUE_OUTPUT=$OUTPUT/vue` will set the value to value of `OUTPUT` plus `/vue`
-  - This transformer will create a Vue component for each Tailwind UI component. This components may need some adjustements, but should in most cases be ready to go. An index script is not included, so the components can't be viewed in the browser yet.
-- `convertReact` - converts HTML component into React/JSX-compatible syntax
-  - Use `.env` key `CONVERTREACT_OUTPUT` to specify which folder to save the React files to
-    (defaults to currently configured `OUTPUT`). You can also use `$OUTPUT` to expand current
-    value. For example: `CONVERTREACT_OUTPUT=$OUTPUT/react` will set the value to value of `OUTPUT` plus `/react`
-  - This transformer will create a folder for each component with an `index.js` file (this is the
-    React component) and an `index.html` page which is a simple wrapper that will load the React component
-    to verify it is working. NOTE: The transformer does not currently update the `alpine.js` code, so
-    the component does not support state or interactivity. However, that is on the TODO list.
-  - You can use [Parcel](https://parceljs.org) to test the React component.
-  - Based on [gist](https://gist.github.com/RobinMalfait/a90e8651196c273dfa51eec0f43e1676) by [@RobinMalfait](https://github.com/RobinMalfait)
-- `stripAlpine` - removes all the Alpine.js attributes from the markup
-  - Use `.env` key `STRIPALPINE_OUTPUT` to specify which folder to save the files to
-  - You must specify the output folder to ensure the raw HTML files are not overwritten
+<table>
+<thead>
+<tr><th>Transformer</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr style="vertical-align: baseline;"><td><code>addTailwindCss</code></td><td>Adds link to tailwindui.css</td></tr>
+<tr style="vertical-align: baseline;"><td><code>prefixSrc</code></td><td>Adds <code>https://tailwindui.com</code> to any img src attribute that needs it</td></tr>
+<tr style="vertical-align: baseline;"><td><code>useInter</code></td><td>Adds link to Inter font css and styles</td></tr>
+
+<tr style="vertical-align: baseline;"><td><code>convertVue</code></td><td>Converts HTML component into a Vue component
+<ul><li>Use <code>.env</code> key <code>VUE_OUTPUT</code> to specify which folder to save the Vue files to (defaults to currently
+configured <code>OUTPUT</code>)</li>
+<li>This transformer will create a Vue component for each Tailwind UI component. This components may need some adjustements,
+but should in most cases be ready to go. An index script is not included, so the components can't be viewed in the browser yet.</li>
+</ul></td></tr>
+
+<tr style="vertical-align: baseline;"><td><code>convertReact</code></td><td>Converts HTML component into React/JSX-compatible syntax
+<ul><li>Use <code>.env</code> key <code>CONVERTREACT_OUTPUT</code> to specify which folder to save the React files to
+(defaults to currently configured <code>OUTPUT</code>).</li>
+<li>This transformer will create a folder for each component with an <code>index.js</code> file (this is the React component) and an <code>index.html</code>
+page which is a simple wrapper that will load the React component to verify it is working. NOTE: The transformer does not currently update the
+<code>alpine.js</code> code, so the component does not support state or interactivity. However, that is on the TODO list.</li>
+<li>You can use <a href="https://parceljs.org">Parcel</a> to test the React component.</li>
+<li>Based on <a href="https://gist.github.com/RobinMalfait/a90e8651196c273dfa51eec0f43e1676">gist</a> by <a href="https://github.com/RobinMalfait">@RobinMalfait</a></li>
+</ul></td></tr>
+
+<tr style="vertical-align: baseline;"><td><code>stripAlpine</code></td><td>Removes all the Alpine.js attributes from the markup
+<ul><li>Use <code>.env</code> key <code>STRIPALPINE_OUTPUT</code> to specify which folder to save the files to. You must
+specify the output folder to ensure the raw HTML files are not overwritten</li>
+</ul></td></tr>
+<tr style="vertical-align: baseline;"><td>✨ <code>changeColor</code> (v2.3)</code></td><td>Changes the default color from <code>indigo</code> to value in <code>CHANGECOLOR_TO</code></td></tr>
+<tr style="vertical-align: baseline;"><td>✨ <code>changeLogo</code> (v2.3)</code></td><td>Changes the logo image from the generic to URL in <code>CHANGELOGO_URL</code></td></tr>
+</tbody>
+</table>
 
 ### 🗂 Index page
 
