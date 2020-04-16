@@ -17,6 +17,7 @@ const { mergeDeep, cleanFilename, ensureDirExists } = require('./utils')
 
 const rootUrl = 'https://tailwindui.com'
 const output = process.env.OUTPUT || './output'
+const htmlMode = process.env.HTMLMODE || 'alpine'
 
 const downloadPage = async url => {
   const response = await fetch(rootUrl + url)
@@ -65,8 +66,8 @@ const processComponentPage = async url => {
   )
   for (let i = 0; i < snippets.length; i++) {
     const snippet = snippets[i]
-    const container = $(snippet.parentNode.parentNode.parentNode)
-    const title = $('h3', container)
+    const $container = $(snippet.parentNode.parentNode.parentNode)
+    const title = $('h3', $container)
       .text()
       .trim()
 
@@ -77,12 +78,24 @@ const processComponentPage = async url => {
       .update(path)
       .digest('hex')
 
-    const code = applyTransformers(
+    let code = ''
+    if (htmlMode === 'alpine') {
+      const iframe = $container.parent().find('iframe')
+      const $doc = cheerio.load(iframe.attr('srcdoc'))
+      const $body = $doc('body')
+      const $first = $body.children().first()
+      code = $first.attr('class') === '' ? $first.html() : $body.html()
+      code = `<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.0.1/dist/alpine.js" defer></script>\n\n${code}`
+    } else if (htmlMode === 'comments') {
+      code = $(snippet)
+        .text()
+        .trim()
+    }
+
+    code = applyTransformers(
       transformers,
       // @ts-ignore
-      cheerio.load($(snippet).text(), {
-        serialize,
-      }),
+      cheerio.load(code, { serialize }),
       {
         rootUrl,
         output,
@@ -132,6 +145,13 @@ const login = async () => {
 ;(async function() {
   try {
     ensureDirExists(output)
+
+    if (!/alpine|comments/.test(htmlMode)) {
+      console.log(
+        `🚫  Unknown HTMLMODE '${htmlMode}' - should be alpine|comments`,
+      )
+      return 1
+    }
 
     console.log('🔐  Logging into tailwindui.com...')
     const success = await login()
