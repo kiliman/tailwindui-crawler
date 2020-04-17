@@ -116,7 +116,7 @@ yarn global add serve
 serve
 ```
 
-In order to see the components styled, you probably will want to use `TRANSFORMERS=addTailwindCss,prefixSrc,useInter`.
+> NOTE: In order to see the components styled, you probably will want to use `TRANSFORMERS=addTailwindCss,prefixSrc,useInter`.
 
 ---
 
@@ -181,12 +181,12 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/kiliman"><img src="https://avatars3.githubusercontent.com/u/47168?v=4&size=100" width="100px;" alt=""/><br /><sub><b>Kiliman</b></sub></a></td>
-    <td align="center"><a href="http://www.cemfi.de"><img src="https://avatars0.githubusercontent.com/u/8217108?v=4&size=100" width="100px;" alt=""/><br /><sub><b>Simon Waloschek</b></sub></a></td>
-    <td align="center"><a href="https://github.com/nawok"><img src="https://avatars3.githubusercontent.com/u/159773?v=4&size=100" width="100px;" alt=""/><br /><sub><b>Pavel Fomchenkov</b></sub></a></td>
-    <td align="center"><a href="https://robinmalfait.com"><img src="https://avatars2.githubusercontent.com/u/1834413?v=4&size=100" width="100px;" alt=""/><br /><sub><b>Robin Malfait</b></sub></a></td>
-    <td align="center"><a href="https://miguelpiedrafita.com"><img src="https://avatars0.githubusercontent.com/u/23558090?v=4&size=100" width="100px;" alt=""/><br /><sub><b>Miguel Piedrafita</b></sub></a></td>
-    <td align="center"><a href="https://github.com/vladdu"><img src="https://avatars0.githubusercontent.com/u/9707?v=4&size=100" width="100px;" alt=""/><br /><sub><b>Vlad Dumitrescu</b></sub></a></td>
+    <td align="center"><a href="https://github.com/kiliman"><img src="https://avatars3.githubusercontent.com/u/47168?v=4" width="100px;" alt=""/><br /><sub><b>Kiliman</b></sub></a><br /><a href="https://github.com/kiliman/tailwindui-crawler/commits?author=kiliman" title="Code">💻</a></td>
+    <td align="center"><a href="http://www.cemfi.de"><img src="https://avatars0.githubusercontent.com/u/8217108?v=4" width="100px;" alt=""/><br /><sub><b>Simon Waloschek</b></sub></a><br /><a href="https://github.com/kiliman/tailwindui-crawler/commits?author=sonovice" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/nawok"><img src="https://avatars3.githubusercontent.com/u/159773?v=4" width="100px;" alt=""/><br /><sub><b>Pavel Fomchenkov</b></sub></a><br /><a href="https://github.com/kiliman/tailwindui-crawler/commits?author=nawok" title="Code">💻</a></td>
+    <td align="center"><a href="https://robinmalfait.com"><img src="https://avatars2.githubusercontent.com/u/1834413?v=4" width="100px;" alt=""/><br /><sub><b>Robin Malfait</b></sub></a><br /><a href="https://github.com/kiliman/tailwindui-crawler/commits?author=RobinMalfait" title="Code">💻</a></td>
+    <td align="center"><a href="https://miguelpiedrafita.com"><img src="https://avatars0.githubusercontent.com/u/23558090?v=4" width="100px;" alt=""/><br /><sub><b>Miguel Piedrafita</b></sub></a><br /><a href="https://github.com/kiliman/tailwindui-crawler/commits?author=m1guelpf" title="Code">💻</a> <a href="https://github.com/kiliman/tailwindui-crawler/commits?author=m1guelpf" title="Documentation">📖</a> <a href="#ideas-m1guelpf" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/vladdu"><img src="https://avatars0.githubusercontent.com/u/9707?v=4" width="100px;" alt=""/><br /><sub><b>Vlad Dumitrescu</b></sub></a><br /><a href="https://github.com/kiliman/tailwindui-crawler/commits?author=vladdu" title="Documentation">📖</a></td>
   </tr>
 </table>
 
