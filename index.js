@@ -165,7 +165,7 @@ const login = async () => {
     const $ = await downloadPage('/components')
     const library = {}
     const links = $('.grid a')
-    const count = links.length
+    const count = process.env.COUNT || links.length
     for (let i = 0; i < count; i++) {
       const link = links[i]
       const url = $(link).attr('href')
