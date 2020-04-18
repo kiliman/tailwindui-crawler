@@ -75,7 +75,9 @@ The following transformers are availble:
 <tr><th>Transformer</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr style="vertical-align: baseline;"><td><code>addTailwindCss</code></td><td>Adds link to tailwindui.css</td></tr>
+<tr style="vertical-align: baseline;"><td><code>addTailwindCss</code></td><td>Adds link to tailwindui.css
+<ul><li>Use <code>ADDTAILWINDCSS_URL</code> to specify URL to css (defaults to tailwindui CDN)</li>
+</ul></td></tr>
 <tr style="vertical-align: baseline;"><td><code>prefixSrc</code></td><td>Adds <code>https://tailwindui.com</code> to any img src attribute that needs it</td></tr>
 <tr style="vertical-align: baseline;"><td><code>useInter</code></td><td>Adds link to Inter font css and styles</td></tr>
 
@@ -100,8 +102,11 @@ page which is a simple wrapper that will load the React component to verify it i
 <ul><li>Use <code>.env</code> key <code>STRIPALPINE_OUTPUT</code> to specify which folder to save the files to. You must
 specify the output folder to ensure the raw HTML files are not overwritten</li>
 </ul></td></tr>
-<tr style="vertical-align: baseline;"><td>✨ <code>changeColor</code> (v2.3)</code></td><td>Changes the default color from <code>indigo</code> to value in <code>CHANGECOLOR_TO</code></td></tr>
-<tr style="vertical-align: baseline;"><td>✨ <code>changeLogo</code> (v2.3)</code></td><td>Changes the logo image from the generic to URL in <code>CHANGELOGO_URL</code></td></tr>
+<tr style="vertical-align: baseline;"><td>✨v2.3 <code>changeColor</code></code></td><td>Changes the default color from <code>indigo</code> to value in <code>CHANGECOLOR_TO</code></td></tr>
+<tr style="vertical-align: baseline;"><td>✨v2.3 <code>changeLogo</code></code></td><td>Changes the logo image from the generic to URL in <code>CHANGELOGO_URL</code></td></tr>
+<tr style="vertical-align: baseline;"><td>✨v2.4 <code>prefixClasses</code></code></td><td>Adds prefix specified in <code>PREFIXCLASSES_PREFIX</code> to all Tailwind classes
+<ul><li>NOTE: You will want to use the <code>addTailwindCss</code> transformer and specify the URL to your custom css in <code>ADDTAILWINDCSS_URL</code></li>
+</ul></td></tr>
 </tbody>
 </table>
 
@@ -113,6 +118,7 @@ to view the index.
 
 ```bash
 yarn global add serve
+cd $OUTPUT # change to your OUTPUT folder
 serve
 ```
 
@@ -146,11 +152,31 @@ You can view each component and the highlighted code. Currently resizing and cop
 EMAIL=******
 PASSWORD=******
 OUTPUT=$HOME/Projects/oss/tailwindui
-BUILDINDEX=1
-TRANSFORMERS=addTailwindCss,prefixSrc,useInter,convertReact,stripAlpine
-VUE_OUTPUT=$OUTPUT/vue
-CONVERTREACT_OUTPUT=$OUTPUT/react
-STRIPALPINE_OUTPUT=$OUTPUT/no-alpine
+HTMLMODE=alpine # apline | comments
+BUILDINDEX=1    # 0 | 1
+
+TRANSFORMERS=addTailwindCss,prefixSrc,useInter,changeColor,changeLogo,prefixClasses,convertReact,stripAlpine
+
+# addTailwindCss
+ADDTAILWINDCSS_URL=http://localhost/path/to/css # defaults to twui CDN
+
+# convertVue
+VUE_OUTPUT=$OUTPUT/vue  # path to save Vue files (defaults to $OUTPUT)
+
+# convertReact
+CONVERTREACT_OUTPUT=$OUTPUT/react # path to save React files (default to $OUTPUT)
+
+# stripAlpine
+STRIPALPINE_OUTPUT=$OUTPUT/no-alpine # path to save stripped HTML files (REQUIRED)
+
+# changeColor
+CHANGECOLOR_TO=red # name of color to change from indigo
+
+# changeLogo
+CHANGELOGO_URL=http://localhost/path/to/logo # URL of logo (defaults to generic tailwind logo)
+
+# prefixClasses
+PREFIXCLASSES_PREFIX=tw- # adds prefix to all tailwind classes
 ```
 
 ## 🚦 Upgrading to v2.
