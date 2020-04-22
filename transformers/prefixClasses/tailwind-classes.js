@@ -1,8 +1,6 @@
 
-export default {
-  data() {
-    return {
-      classes: [
+module.exports = {
+  classes: [
         '-m-05',
         '-m-1',
         '-m-1/12',
@@ -5344,6 +5342,4 @@ export default {
         'z-50',
         'z-auto',
       ],
-    };
-  },
-};
+}
