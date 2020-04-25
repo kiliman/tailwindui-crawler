@@ -191,21 +191,21 @@ You can automatically keep a **private** GitHub repository up-to-date with compo
    ```yml
    name: Update
    on:
-   push:
-   schedule:
-     - cron: '0 0 * * *' # Every day at midnight
+     schedule:
+       - cron: '0 0 * * *' # Every day at midnight
+
    jobs:
-   deploy:
-     name: Update
-     runs-on: ubuntu-latest
-     steps:
-       - name: Checkout
-         uses: actions/checkout@v2
-       - name: Run crawler
-         uses: gregbrimble/tailwindui-crawler-action@v1.0.0
-         with:
-           email: ${{ secrets.TAILWINDUI_EMAIL }}
-           password: ${{ secrets.TAILWINDUI_PASSWORD }}
+     update:
+       name: Update
+       runs-on: ubuntu-latest
+       steps:
+         - name: Checkout
+           uses: actions/checkout@v2
+         - name: Run crawler
+           uses: gregbrimble/tailwindui-crawler-action@v1.0.0
+           with:
+             email: ${{ secrets.TAILWINDUI_EMAIL }}
+             password: ${{ secrets.TAILWINDUI_PASSWORD }}
    ```
 
    Read more about the schedule cron syntax in [the official GitHub Actions documentation](https://help.github.com/en/actions/reference/events-that-trigger-workflows#scheduled-events-schedule).
