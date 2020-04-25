@@ -1,7 +1,9 @@
 # tailwindui-crawler
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <img src="./images/tailwindui-crawler.png">
@@ -177,6 +179,41 @@ CHANGELOGO_URL=http://localhost/path/to/logo # URL of logo (defaults to generic 
 PREFIXCLASSES_PREFIX=tw- # adds prefix to all tailwind classes
 ```
 
+## Automatically keep a **private** GitHub Repository up-to-date
+
+You can automatically keep a **private** GitHub repository up-to-date with component changes from TailwindUI by using this tool with GitHub Actions.
+
+1. [Create a **private** GitHub repository](https://github.com/new/).
+1. [Add `TAILWINDUI_EMAIL` and `TAILWINDUI_PASSWORD` secrets to the GitHub repository](https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets).
+1. [Optionally create a `.env` file with additional settings for the crawler](#%EF%B8%8F-example-env-file).
+1. Create a new file `.github/workflows/default.yml`:
+
+   ```yml
+   name: Update
+   on:
+   push:
+   schedule:
+     - cron: '0 0 * * *' # Every day at midnight
+   jobs:
+   deploy:
+     name: Update
+     runs-on: ubuntu-latest
+     steps:
+       - name: Checkout
+         uses: actions/checkout@v2
+       - name: Run crawler
+         uses: gregbrimble/tailwindui-crawler-action@v1.0.0
+         with:
+           email: ${{ secrets.TAILWINDUI_EMAIL }}
+           password: ${{ secrets.TAILWINDUI_PASSWORD }}
+   ```
+
+   Read more about the schedule cron syntax in [the official GitHub Actions documentation](https://help.github.com/en/actions/reference/events-that-trigger-workflows#scheduled-events-schedule).
+
+### Email Notifications
+
+To be emailed whenever there is a change to a component, simply setup [GitHub Notifications](https://help.github.com/en/github/administering-a-repository/about-email-notifications-for-pushes-to-your-repository#enabling-email-notifications-for-pushes-to-your-repository) on your repository.
+
 ## 🚦 Upgrading to v2.
 
 Since the transformers can make a lot of changes to the files, I would recommend
@@ -217,6 +254,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
