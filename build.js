@@ -1,21 +1,22 @@
 const fs = require('fs')
-const { kebab } = require('./utils')
+const { kebab, ensureDirExists } = require('./utils')
+
+const htmlEscape = html => html.replace(/\&/g, '&amp;').replace(/\</g, '&lt;')
 
 module.exports.buildIndexPage = function(output, library) {
   let html = `<html>
   <head>
     <title>Tailwind UI Components</title>
-    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/@tailwindcss/ui@latest/dist/tailwind-ui.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&display=auto" rel="stylesheet">
+    <link href="/css/app.css" rel="stylesheet" />
     <style>
       * { box-sizing: border-box; }
-      .font-sans { font-family: "Inter", sans-serif; }
     </style>
   </head>
 
   <body class="font-sans antialiased text-gray-900">
     <main>
-      <div class="max-w-8xl mx-auto grid grid-cols-1 row-gap-16 px-4 py-4 sm:px-6 sm:py-12 lg:px-8">
+      <div class="max-w-8xl mx-auto grid grid-cols-1 gap-y-16 px-4 py-4 sm:px-6 sm:py-12 lg:px-8">
 `
   Object.entries(library).forEach(([categoryName, category]) => {
     html += `
@@ -26,30 +27,32 @@ module.exports.buildIndexPage = function(output, library) {
     <h2 class="text-2xl leading-8 font-semibold tracking-tight font-display text-gray-900 sm:text-3xl sm:leading-9">
     ${categoryName}
   </h2>
-  <div class="mt-6 grid grid-cols-1 row-gap-8">
+  <div class="mt-6 grid grid-cols-1 gap-y-8">
   `
     Object.entries(category).forEach(([subCategoryName, subCategory]) => {
       html += `
       <div id="${kebab(categoryName)}-${kebab(
         subCategoryName,
-      )}" class="border-t border-gray-200 pt-8 grid grid-cols-1 row-gap-6 lg:grid-cols-4 lg:gap-5">
+      )}" class="border-t border-gray-200 pt-8 grid grid-cols-1 gap-y-6 lg:grid-cols-4 lg:gap-5">
         <div>
           <h3 class="text-lg leading-7 font-medium tracking-tight text-gray-900">
             ${subCategoryName}
           </h3>
         </div>
-        <div class="grid grid-cols-1 row-gap-8 sm:grid-cols-2 sm:col-gap-5 sm:row-gap-6 md:grid-cols-3 lg:col-span-3">`
+        <div class="grid grid-cols-1 gap-y-8 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-6 md:grid-cols-3 lg:col-span-3">`
 
       Object.entries(subCategory).forEach(([sectionName, section]) => {
         html += `
-          <a href="${section.url}" class="block group ">
-            <div class="mt-3">
+        <div class="border border-gray-300 rounded-md p-2">
+          <a href="${section.url}" class="block group">
+            <div>
               <p class="text-sm leading-5 font-medium text-gray-900">${sectionName}</p>
               <p class="text-sm leading-5 text-gray-500">${
                 section.components.length
               } component${section.components.length === 1 ? '' : 's'}</p>
             </div>
-          </a>
+            </a>
+          </div>
           `
         buildSectionPage(
           output,
@@ -71,7 +74,9 @@ module.exports.buildIndexPage = function(output, library) {
   })
   html += `</main></body></html>`
   console.log(`📝  Writing index.html`)
-  fs.writeFileSync(`${output}/index.html`, html)
+  fs.writeFileSync(`${output}/preview/index.html`, html)
+  ensureDirExists(`${output}/preview/css`)
+  fs.copyFileSync('./css/app.css', `${output}/preview/css/app.css`)
 }
 
 const buildSectionPage = (
@@ -84,14 +89,12 @@ const buildSectionPage = (
   let html = `<html>
   <head>
     <title>Tailwind UI Components</title>
-    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/@tailwindcss/ui@latest/dist/tailwind-ui.min.css" rel="stylesheet"/>
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.0.1/dist/alpine.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&display=auto" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/highlightjs-themes@1.0.0/darkula.css" rel="stylesheet"/>
-    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/highlight.min.js"></script>
+    <link href="/css/app.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/combine/npm/highlightjs@9.16.2/highlight.pack.min.js,npm/axios@0.19.2/dist/axios.min.js,npm/dlv@1.1.3/dist/dlv.umd.min.js,gh/alpinejs/alpine@v2.2.1/dist/alpine.js,npm/fuse.js@5.0.9-beta/dist/fuse.min.js"></script>    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.0.1/dist/alpine.js" defer></script>
     <style>
       * { box-sizing: border-box; }
-      .font-sans { font-family: "Inter", sans-serif; }
       .hljs {
         background: #252f3f;
         color: white;
@@ -141,12 +144,24 @@ const buildSectionPage = (
     <div class="max-w-8xl mx-auto">
     `
   section.components.forEach(component => {
+    const filePath = `${output}/html${component.url}`
+    let code = htmlEscape(fs.readFileSync(filePath, 'utf-8'))
+
     html += `
-    <div id="component-${component.hash}" x-data="{ activeTab: 'preview' }" class="border-b border-t border-gray-200 sm:border sm:rounded-lg overflow-hidden mb-16">
+    <div id="component-${
+      component.hash
+    }" x-data="{ activeTab: 'preview' }" class="border-b border-t border-gray-200 sm:border sm:rounded-lg overflow-hidden mb-16">
     <div class="px-4 py-2 border-b border-gray-200 flex justify-between items-center bg-white sm:py-4 sm:px-6 sm:items-baseline">
-      <h3 class="font-regular text-base md:text-lg leading-snug truncate">
-        <a href="#component-${component.hash}">${component.title}</a>
-      </h3>
+      <div class="flex items-center">
+        <h3 class="font-regular text-base md:text-lg leading-snug truncate">
+          <a href="#component-${component.hash}">${component.title}</a>
+        </h3>
+        ${
+          component.hasAlpine
+            ? '<a href="http://tailwindui.com/documentation#integrating-with-javascript-frameworks" class="ml-4 bg-pink-100 rounded-full px-2 py-0.5 flex items-center text-xs leading-4 tracking-wide uppercase font-semibold"><span class="text-pink-700">Requires JS</span></a>'
+            : ''
+        }
+        </div>
       <div class="ml-4 flex flex-shrink-0 items-center">
         <div class="flex items-center text-sm sm:hidden">
           <button type="button" @click="activeTab === 'preview' ? (activeTab = 'code') : (activeTab = 'preview')" :class="{'bg-indigo-50 text-indigo-700': activeTab === 'code', 'text-gray-400 hover:text-gray-600 focus:text-gray-600': activeTab !== 'code'}" class="inline-block rounded-lg font-medium leading-none py-3 px-3 focus:outline-none text-gray-400 hover:text-gray-600 focus:text-gray-600">
@@ -162,7 +177,7 @@ const buildSectionPage = (
           <button type="button" @click="activeTab = 'code'" :class="{'bg-indigo-50 text-indigo-700': activeTab === 'code', 'text-gray-500 hover:text-indigo-600 focus:text-indigo-600': activeTab !== 'code'}" class="ml-2 inline-block rounded-lg font-medium leading-none py-2 px-3 focus:outline-none text-gray-500 hover:text-indigo-600 focus:text-indigo-600">
             Code
           </button>
-          <textarea class="hidden">Code goes here</textarea>
+          <textarea class="hidden">${code}</textarea>
         </div>
         <div class="hidden sm:flex sm:items-center">
           <div class="pl-4 pr-3 self-stretch">
@@ -181,9 +196,11 @@ const buildSectionPage = (
     <div class="relative bg-gray-500">
       <div :class="{ 'block': activeTab === 'preview', 'hidden': activeTab !== 'preview' }" class="block">
         <div x-data="resizableIFrame()" x-init="init()" x-ref="root" :style="'max-width: 100%; width: ' + width" class="sm:min-w-preview-mobile relative sm:pr-4" style="max-width: 100%; width: 100%">
-          <iframe x-ref="iframe" class="w-full" src="${component.url}" style="height: 265px;"></iframe>
+          <iframe class="w-full" data-id="${component.hash}" src="${
+      component.url
+    }" style="height: 265px;"></iframe>
           <div :class="{ 'pointer-events-none': !resizing }" class="absolute opacity-0 inset-0 pointer-events-none"></div>
-          <div x-ref="handle" class="sr-only sm:not-sr-only sm:border-l sm:bg-gray-100 sm:absolute sm:right-0 sm:inset-y-0 sm:flex sm:items-center sm:w-4">
+          <div x-ref="handle" style="cursor: ew-resize;" class="sr-only sm:not-sr-only sm:border-l sm:bg-gray-100 sm:absolute sm:right-0 sm:inset-y-0 sm:flex sm:items-center sm:w-4">
             <svg class="h-4 w-4 text-gray-600 pointer-events-none" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5h2v14H8zM14 5h2v14h-2z"></path>
             </svg>
@@ -204,52 +221,92 @@ const buildSectionPage = (
 </div>
 </main>
 <script>
-(function() {
+;(function() {
   const getDocHeight = doc => {
-    doc = doc || document;
-    const body = doc.body;
-    const html = doc.documentElement;
+    doc = doc || document
+    const body = doc.body
+    const html = doc.documentElement
     const height = Math.max(
       body.scrollHeight,
       body.offsetHeight,
       html.clientHeight,
       html.scrollHeight,
-      html.offsetHeight
-    );
-    return height;
-  };
+      html.offsetHeight,
+    )
+    return height
+  }
 
   window.resizableIFrame = function() {
     return {
       resizing: !1,
-      width: "100%",
-      init: function() {}
-    };
-  };
-  const iframes = document.querySelectorAll("iframe");
+      width: '100%',
+      init: function() {},
+    }
+  }
+  const iframes = document.querySelectorAll('iframe')
   Array.from(iframes).forEach(iframe => {
-    iframe.addEventListener("load", e => {
-      const iframe = e.srcElement;
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-      doc.body.classList.add("antialiased", "font-sans", "bg-white")
-      iframe.style.visibility = "hidden";
-      iframe.style.height = "10px";
-      const height = Math.max(getDocHeight(doc), 256) + "px";
-      iframe.style.height = height;
-      iframe.style.visibility = "visible";
+    iframe.addEventListener('load', e => {
+      const iframe = e.srcElement
+      const doc = iframe.contentDocument || iframe.contentWindow.document
+      doc.body.classList.add('antialiased', 'font-sans', 'bg-white')
+      iframe.style.visibility = 'hidden'
+      iframe.style.height = '10px'
+      const height = Math.max(getDocHeight(doc), 256) + 'px'
+      iframe.style.height = height
+      iframe.style.visibility = 'visible'
+      const container = iframe.parentElement.parentElement.parentElement
+      const textarea = container.parentElement.querySelector('textarea')
+      const html = textarea.innerText.trim()
+      hljs.configure({ useBR: false, tabReplace: '  ' })
+      const highlighted = hljs.highlight('html', html)
+      const codeElem = container.children[1].querySelector('code')
+      codeElem.innerHTML = highlighted.value
+    })
+  })
+  Array.from(document.querySelectorAll('[x-ref=handle]')).forEach(
+    function(handle, index) {
+      handle.addEventListener('mousedown', createDragHandlers())
+    },
+  )
 
-      const html = doc.body.innerHTML.trim();
-      const container = iframe.parentElement.parentElement.parentElement;
-      hljs.configure({useBR: false, tabReplace: '  '});
-      const highlighted = hljs.highlight('html', html);
-      const codeElem = container.children[1].querySelector("code");
-      codeElem.innerHTML = highlighted.value;
-    });
-  });
-})();
+  function createDragHandlers() {
+    return function(event) {
+      // capture initial screenX
+      var target = event.target
+      var parent = target.parentElement
+      var iframe = parent.childNodes[1]
+
+      var screenX = event.screenX
+      var moveListener = function(event) {
+        event.stopPropagation()
+        dragMoveListener(event, target, event.screenX - screenX)
+      }
+      var elements = [document, iframe.contentWindow]
+
+      elements.forEach(e => {
+        e.addEventListener('mousemove', moveListener)
+        e.addEventListener('mouseup', cleanup)
+      })
+
+      function cleanup() {
+        elements.forEach(e =>
+          e.removeEventListener('mousemove', moveListener),
+        )
+      }
+    }
+  }
+  function dragMoveListener(event, target, dx) {
+    var parent = target.parentElement
+    var iframe = parent.childNodes[1]
+    var maxWidth = parent.offsetWidth - target.offsetWidth
+    var width = Math.max(376, Math.min(maxWidth + dx, maxWidth))
+    iframe.style.width = width + 'px'
+    target.style.left = width + 'px'
+  }
+})()
 </script>
 </body>
 </html>`
   console.log(`📝  Writing ${section.url}`)
-  fs.writeFileSync(`${output}${section.url}`, html)
+  fs.writeFileSync(`${output}/preview${section.url}`, html)
 }

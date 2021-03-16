@@ -18,6 +18,7 @@ const { mergeDeep, cleanFilename, ensureDirExists } = require('./utils')
 const rootUrl = 'https://tailwindui.com'
 const output = process.env.OUTPUT || './output'
 const htmlMode = process.env.HTMLMODE || 'alpine'
+const downloadCache = new Map()
 
 const downloadPage = async url => {
   const response = await fetch(rootUrl + url)
@@ -40,6 +41,11 @@ const applyTransformers = (transformers, $, options) => {
   return $
 }
 
+const getTransformers = transformerNames =>
+  transformerNames
+    .filter(Boolean)
+    .map(name => require(`./transformers/${name}`))
+
 const processComponentPage = async url => {
   const $ = await downloadPage(url)
   const navLinks = $('nav a')
@@ -54,16 +60,14 @@ const processComponentPage = async url => {
     .trim()
 
   const transformerNames = (process.env.TRANSFORMERS || '').split(',')
-  const transformers = []
-  transformerNames.filter(Boolean).forEach(name => {
-    transformers.push(require(`./transformers/${name}`))
-  })
+  const transformers = getTransformers(transformerNames)
 
   const components = []
   const snippets = $('textarea')
   console.log(
     `🔍  Found ${snippets.length} component${snippets.length === 1 ? '' : 's'}`,
   )
+
   for (let i = 0; i < snippets.length; i++) {
     const snippet = snippets[i]
     const $container = $(snippet.parentNode.parentNode.parentNode)
@@ -78,41 +82,83 @@ const processComponentPage = async url => {
       .update(path)
       .digest('hex')
 
-    let code = ''
-    if (htmlMode === 'alpine') {
-      const iframe = $container.parent().find('iframe')
-      const $doc = cheerio.load(iframe.attr('srcdoc'))
-      const $body = $doc('body')
-      const $first = $body.children().first()
-      code = $first.attr('class') === '' ? $first.html() : $body.html()
-      code = `<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.0.1/dist/alpine.js" defer></script>\n\n${code}`
-    } else if (htmlMode === 'comments') {
-      code = $(snippet)
+    let hasAlpine = false
+    let $doc // doc to be transformed (either from snippet or preview)
+    if (process.env.HTMLMODE === 'comments') {
+      const html = $(snippet)
         .text()
         .trim()
+      $doc = cheerio.load(html, { serialize })
     }
+    if (process.env.BUILDINDEX === '1' || process.env.HTMLMODE === 'alpine') {
+      const iframe = $container.parent().find('iframe')
+      const preview = iframe.attr('srcdoc')
 
-    code = applyTransformers(
-      transformers,
-      // @ts-ignore
-      cheerio.load(code, { serialize }),
-      {
-        rootUrl,
-        output,
-        title,
-        path,
-        fs,
-      },
-    ).html()
+      const $previewdoc = cheerio.load(preview, { serialize })
+      // if alpine mode, then transform from preview
+      if (process.env.HTMLMODE === 'alpine') {
+        $doc = $previewdoc
+      }
 
-    const dir = `${output}${dirname(path)}`
+      // download referenced css and js inside <head>
+      const items = $previewdoc('head>link,head>script')
+      for (let i = 0; i < items.length; i++) {
+        const $item = $(items[i])
+        const url = $item.attr('src') ?? $item.attr('href')
+        if (!url.startsWith('/')) continue
+
+        // check cache to see if we've already downloaded this file
+        if (downloadCache.has(url)) continue
+
+        // strip off id querystring
+        const path = url.substring(0, url.indexOf('?id='))
+        const dir = `${output}/preview${dirname(path)}`
+        ensureDirExists(dir)
+        const filePath = `${dir}/${basename(path)}`
+
+        const response = await fetch(rootUrl + url)
+        const content = await response.text()
+        fs.writeFileSync(filePath, content)
+        // just mark this url as already downloaded
+        downloadCache.set(url, filePath)
+      }
+
+      // write alpine preview
+      let dir = `${output}/preview/${dirname(path)}`
+      ensureDirExists(dir)
+      let filePath = `${dir}/${basename(path)}.html`
+      console.log(`📸  Saving preview ${filename}.html`)
+      fs.writeFileSync(filePath, preview)
+      hasAlpine = /x-(data|show)/.test(preview)
+    }
+    const $body = applyTransformers(transformers, $doc, {
+      rootUrl,
+      output,
+      title,
+      path,
+      fs,
+    })('body')
+    const $first = $body.children().first()
+    // strip empty wrapper div if present
+    const code = ($first.attr('class') === ''
+      ? $first.html()
+      : $body.html()
+    ).trim()
+
+    dir = `${output}/html${dirname(path)}`
     ensureDirExists(dir)
 
-    components.push({ hash, title, url: `${url}/${filename}.html` })
-
-    const filePath = `${dir}/${basename(path)}.html`
+    filePath = `${dir}/${basename(path)}.html`
     console.log(`📝  Writing ${filename}.html`)
     fs.writeFileSync(filePath, code)
+
+    components.push({
+      hash,
+      title,
+      url: `${url}/${filename}.html`,
+      source: `html/${url}/${filename}.html`,
+      hasAlpine,
+    })
   }
   return {
     [category]: {
