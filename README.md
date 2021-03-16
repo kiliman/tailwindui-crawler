@@ -110,7 +110,7 @@ specify the output folder to ensure the raw HTML files are not overwritten</li>
 </tbody>
 </table>
 
-### 🗂 Index page
+### 🗂 Preview page
 
 You can set the `.env` key `BUILDINDEX=1` to have the crawler generate an index file similar to the components
 page on [tailwindui.com](https://tailwindui.com). Install and run the [serve](https://www.npmjs.com/package/serve) package
@@ -125,8 +125,6 @@ yarn global add serve
 cd $OUTPUT # change to your OUTPUT folder
 serve
 ```
-
-You can view each component and the highlighted code. Currently resizing and copying code is not supported.
 
 ### ⚙️ Example `.env` file
 
