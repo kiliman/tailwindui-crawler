@@ -13,7 +13,7 @@ component HTML to the `./output` folder.
 
 ## 🛠 How to use
 
-To install, clone this repo and run `yarn` to pull down the dependencies.
+To install, clone this repo and run `yarn` or `npm install` to pull down the dependencies.
 
 Then create a `.env` file with your email, password, and optional output folder.
 
@@ -38,7 +38,7 @@ There are also new transformers to change the color and logo of the HTML compone
 > so if your password or any other value includes a `$`, make sure you add a `\` (backslash) to
 > escape the `$`. For example, `PASSWORD=p@\$\$w0rd`
 
-Then finally, run `yarn start`
+Then finally, run `yarn start` or `npm start`
 
 The script will login to [tailwindui.com](https://tailwindui.com) with your credentials, and download all the
 components as individual HTML files in the `./output` folder.
@@ -116,33 +116,15 @@ You can set the `.env` key `BUILDINDEX=1` to have the crawler generate an index 
 page on [tailwindui.com](https://tailwindui.com). Install and run the [serve](https://www.npmjs.com/package/serve) package
 to view the index.
 
+> NOTE: The HTML Preview does not apply transformers. It's a copy of the
+> component site on [tailwindui.com](https://tailwindui.com). However, the **CODE** button will show the transformed code. It now includes
+> the ability to resize the iframe. All existing interactivity should work. The **COPY** function is not available.
+
 ```bash
 yarn global add serve
 cd $OUTPUT # change to your OUTPUT folder
 serve
 ```
-
-> NOTE: In order to see the components styled, you probably will want to use `TRANSFORMERS=addTailwindCss,prefixSrc,useInter`.
-
----
-
-#### Main index page
-
-<img src="./images/index-main.png" alt="Main index page"/>
-
----
-
-#### Component section page
-
-<img src="./images/index-section.png" alt="Components section page"/>
-
----
-
-#### Click button to view syntax highlighted code
-
-<img src="./images/index-component-code.png" alt="Code for component"/>
-
----
 
 You can view each component and the highlighted code. Currently resizing and copying code is not supported.
 
