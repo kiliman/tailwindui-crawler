@@ -151,9 +151,9 @@ const buildSectionPage = (
     <div id="component-${
       component.hash
     }" x-data="{ activeTab: 'preview' }" class="border-b border-t border-gray-200 sm:border sm:rounded-lg overflow-hidden mb-16">
-    <div class="px-4 py-2 border-b border-gray-200 flex justify-between items-center bg-white sm:py-4 sm:px-6 sm:items-baseline">
-      <div class="flex items-center">
-        <h3 class="font-regular text-base md:text-lg leading-snug truncate">
+      <div class="px-4 py-2 border-b border-gray-200 flex justify-between items-center bg-white sm:py-4 sm:px-6 sm:items-baseline">
+      <div class="flex-shrink min-w-0 flex items-center">
+        <h3 class="flex-shrink min-w-0 font-regular text-base md:text-lg leading-snug truncate">
           <a href="#component-${component.hash}">${component.title}</a>
         </h3>
         ${
@@ -180,7 +180,7 @@ const buildSectionPage = (
           <textarea class="hidden">${code}</textarea>
         </div>
         <div class="hidden sm:flex sm:items-center">
-          <div class="pl-4 pr-3 self-stretch">
+          <div class="pl-4 pr-4 self-stretch">
             <div class="h-full border-l border-gray-200"></div>
           </div>
           <button type="button" @click="$refs.clipboardCode.select(); document.execCommand('copy')" class="ml-3 text-gray-400 hover:text-gray-500">
