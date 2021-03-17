@@ -161,7 +161,7 @@ const buildSectionPage = (
             ? '<a href="http://tailwindui.com/documentation#integrating-with-javascript-frameworks" class="ml-4 bg-pink-100 rounded-full px-2 py-0.5 flex items-center text-xs leading-4 tracking-wide uppercase font-semibold"><span class="text-pink-700">Requires JS</span></a>'
             : ''
         }
-        </div>
+      </div>
       <div class="ml-4 flex flex-shrink-0 items-center">
         <div class="flex items-center text-sm sm:hidden">
           <button type="button" @click="activeTab === 'preview' ? (activeTab = 'code') : (activeTab = 'preview')" :class="{'bg-indigo-50 text-indigo-700': activeTab === 'code', 'text-gray-400 hover:text-gray-600 focus:text-gray-600': activeTab !== 'code'}" class="inline-block rounded-lg font-medium leading-none py-3 px-3 focus:outline-none text-gray-400 hover:text-gray-600 focus:text-gray-600">
@@ -181,7 +181,7 @@ const buildSectionPage = (
         </div>
         <div class="hidden sm:flex sm:items-center">
           <div class="pl-4 pr-4 self-stretch">
-            <div class="h-full border-l border-gray-200"></div>
+            <div class="h-5 border-l border-gray-200"></div>
           </div>
           <button type="button" @click="$refs.clipboardCode.select(); document.execCommand('copy')" class="ml-3 text-gray-400 hover:text-gray-500">
             <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
