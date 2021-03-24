@@ -104,7 +104,7 @@ const processComponentPage = async url => {
       const items = $previewdoc('head>link,head>script')
       for (let i = 0; i < items.length; i++) {
         const $item = $(items[i])
-        const url = $item.attr('src') ?? $item.attr('href')
+        const url = $item.attr('src') || $item.attr('href')
         if (!url.startsWith('/')) continue
 
         // check cache to see if we've already downloaded this file
