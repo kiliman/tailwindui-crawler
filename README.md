@@ -45,7 +45,7 @@ The crawler now supports the new Tailwind UI site and can download HTML, React
 and Vue versions of the components.
 
 You can also download the "alpine" version of the components. ⚠️ WARNING: the
-alpine code is **NOT** production ready. It does not support accesiblity and
+alpine code is **NOT** production ready. It does not support accesibility and
 is used to show a preview of how the component interactivity can be implemented.
 
 It also adds the ability to generate an index page that emulates the [tailwindui.com](https://tailwindui.com) website
