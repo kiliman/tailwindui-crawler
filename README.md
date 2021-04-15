@@ -62,7 +62,7 @@ to view the index.
 
 ```bash
 yarn global add serve
-cd $OUTPUT # change to your OUTPUT folder
+cd $OUTPUT/preview # change to your preview folder
 serve
 ```
 
