@@ -19,7 +19,7 @@ Then create a `.env` file with your email, password, and optional output folder.
 EMAIL=youremail
 PASSWORD=yourpassword
 OUTPUT=/path/to/output # optional, defaults to ./output
-LANGUAGES=html,react,vue # defaults to html
+LANGUAGES=html,react,vue,alpine # defaults to html
 BUILDINDEX=(0 | 1)  # generate index file to view components offline
 ```
 
@@ -43,6 +43,10 @@ that have purchased the library.
 
 The crawler now supports the new Tailwind UI site and can download HTML, React
 and Vue versions of the components.
+
+You can also download the "alpine" version of the components. ⚠️ WARNING: the
+alpine code is **NOT** production ready. It does not support accesiblity and
+is used to show a preview of how the component interactivity can be implemented.
 
 It also adds the ability to generate an index page that emulates the [tailwindui.com](https://tailwindui.com) website
 so you can browse components offline.
@@ -68,7 +72,7 @@ serve
 EMAIL=******
 PASSWORD=******
 OUTPUT=$HOME/Projects/oss/tailwindui
-LANGUAGES=html,react,vue  # default is html
+LANGUAGES=html,react,vue,alpine  # default is html
 BUILDINDEX=1    # 0 | 1
 ```
 

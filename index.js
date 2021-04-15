@@ -70,23 +70,52 @@ async function processSnippet(url, $snippet) {
   json.forEach(item => {
     const language = item.language.toLowerCase()
     if (!languages.includes(language)) return
-
-    const ext = language === 'react' ? 'jsx' : language
-    const code = item.snippet
-    dir = `${output}/${language}${dirname(path)}`
-    ensureDirExists(dir)
-
-    filePath = `${dir}/${basename(path)}.${ext}`
-    console.log(`📝  Writing ${language} ${filename}.${ext}`)
-    fs.writeFileSync(filePath, code)
+    saveLanguageContent(path, language, item.snippet)
   })
 
   // save resources required by snippet preview
   var $iframe = $snippet.find('iframe')
   var html = $iframe.attr('srcdoc')
+
+  // if languages contains alpine, then save the preview as alpine
+  if (languages.includes('alpine')) {
+    const $body = cheerio.load(html)('body')
+    // strip empty wrapper divs if present
+    const $container = findFirstElementWithClass($body.children().first())
+    const code = $container
+      .parent()
+      .html()
+      .trim()
+
+    const disclaimer = `<!--
+  This example requires Tailwind CSS v2.0+
+
+  The alpine.js code is *NOT* production ready and is included to preview
+  possible interactivity
+-->
+`
+    saveLanguageContent(path, 'alpine', `${disclaimer}${code}`)
+  }
+
   await savePageAndResources(url, null, cheerio.load(html))
 }
 
+function findFirstElementWithClass($elem) {
+  // ignore empty class and elements with _style attribute
+  if ($elem.attr('class')?.length > 0 && !$elem.attr('_style')) return $elem
+  return findFirstElementWithClass($elem.children().first())
+}
+async function saveLanguageContent(path, language, code) {
+  const ext =
+    language === 'react' ? 'jsx' : language === 'alpine' ? 'html' : language
+  dir = `${output}/${language}${dirname(path)}`
+  ensureDirExists(dir)
+
+  const filename = basename(path)
+  filePath = `${dir}/${filename}.${ext}`
+  console.log(`📝  Writing ${language} ${filename}.${ext}`)
+  fs.writeFileSync(filePath, code)
+}
 async function savePageAndResources(url, html, $) {
   // download referenced css and js inside <head>
   const items = $('head>link,script')
