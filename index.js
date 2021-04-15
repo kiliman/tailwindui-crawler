@@ -3,7 +3,7 @@ const fs = require('fs')
 const nodeFetch = require('node-fetch')
 const fetch = require('fetch-cookie/node-fetch')(nodeFetch)
 // @ts-ignore
-const formurlencoded = require('form-urlencoded').default
+const formurlencoded = require('form-urlencoded')
 const cheerio = require('cheerio')
 // polyfill matchAll for node versions < 12
 const matchAll = require('string.prototype.matchall')
