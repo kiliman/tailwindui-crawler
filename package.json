@@ -1,6 +1,6 @@
 {
   "name": "tailwindui-crawler",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "Download TailwindUI components",
   "main": "index.js",
   "author": "kiliman <kiliman@gmail.com>",
@@ -24,7 +24,7 @@
     "prettier": "^1.19.1"
   },
   "dependencies": {
-    "cheerio": "^1.0.0-rc.3",
+    "cheerio": "1.0.0-rc.3",
     "dom-serializer": "0.1.1",
     "dotenv": "^8.2.0",
     "dotenv-expand": "^5.1.0",
