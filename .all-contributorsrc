@@ -75,6 +75,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "GregBrimble",
+      "name": "Greg Brimble",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8484333?v=4",
+      "profile": "https://gregbrimble.com/",
+      "contributions": [
+        "doc",
+        "tool"
+      ]
     }
   ],
   "contributorsPerLine": 7
