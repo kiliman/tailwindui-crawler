@@ -49,8 +49,19 @@ async function processComponentPage(url) {
   }
 
   if (process.env.BUILDINDEX === '1') {
-    await savePageAndResources(url, html, $)
+    const preview = replaceTokens(html)
+    await savePageAndResources(url, preview, $)
   }
+}
+
+function replaceTokens(html) {
+  // replace tokens in page with constant so it won't generate superfluous diffs
+  // also replace links to css/js assets to remove id querystring
+  const regexTokens = /name="(csrf-token|_token)"\s+(content|value)="(.+?)"/gm
+  const regexAssets = /(src|href)="(.+?)\?id=.*?"/gm
+  return html
+    .replace(regexTokens, `name="$1" $2="CONSTANT_TOKEN"`)
+    .replace(regexAssets, `$1="$2"`)
 }
 
 async function processSnippet(url, $snippet) {
@@ -193,14 +204,14 @@ async function login() {
       console.log()
     }
     if (process.env.BUILDINDEX === '1') {
-      await savePageAndResources(
-        '/components',
-        html.replace(
-          /\/img\/category-thumbnails-refresh\//g,
-          'https://tailwindui.com/img/category-thumbnails-refresh/',
-        ),
-        $,
+      let preview = html.replace(
+        /\/img\/category-thumbnails-refresh\//g,
+        'https://tailwindui.com/img/category-thumbnails-refresh/',
       )
+
+      preview = replaceTokens(preview)
+
+      await savePageAndResources('/components', preview, $)
       fs.copyFileSync('./previewindex.html', `${output}/preview/index.html`)
       console.log()
     }
