@@ -19,7 +19,7 @@ Then create a `.env` file with your email, password, and optional output folder.
 EMAIL=youremail
 PASSWORD=yourpassword
 OUTPUT=/path/to/output # optional, defaults to ./output
-LANGUAGES=html,react,vuew # defaults to html
+LANGUAGES=html,react,vue # defaults to html
 BUILDINDEX=(0 | 1)  # generate index file to view components offline
 ```
 
