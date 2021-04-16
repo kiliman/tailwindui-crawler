@@ -18,14 +18,22 @@ Then create a `.env` file with your email, password, and optional output folder.
 ```ini
 EMAIL=youremail
 PASSWORD=yourpassword
-OUTPUT=/path/to/output # optional, defaults to ./output
-LANGUAGES=html,react,vue,alpine # defaults to html
-BUILDINDEX=(0 | 1)  # generate index file to view components offline
+# OUTPUT optional, defaults to ./output
+OUTPUT=/path/to/output
+# LANGUAGES defaults to html
+LANGUAGES=html,react,vue,alpine
+# BUILDINDEX generate index file to view components offline
+BUILDINDEX=(0 | 1)
 ```
 
-> NOTE: The tool uses [dotenv-expand](https://github.com/motdotla/dotenv-expand) to support variable expansion like `$HOME/path/to/output`
-> so if your password or any other value includes a `$`, make sure you add a `\` (backslash) to
+> NOTE: The tool uses [dotenv-expand](https://github.com/motdotla/dotenv-expand)
+> to support variable expansion like `$HOME/path/to/output` so if your password
+> or any other value includes a `$`, make sure you add a `\` (backslash) to
 > escape the `$`. For example, `PASSWORD=p@\$\$w0rd`
+>
+> Also, `dotenv` does **not** support inline comments, so do not do something
+> like `LANGUAGES=html,react,vue  # some comment` as it will not get the correct
+> values.
 
 Then finally, run `yarn start` or `npm start`
 
@@ -71,9 +79,9 @@ serve
 ```ini
 EMAIL=******
 PASSWORD=******
-OUTPUT=$HOME/Projects/oss/tailwindui
-LANGUAGES=html,react,vue,alpine  # default is html
-BUILDINDEX=1    # 0 | 1
+OUTPUT=$HOME/Projects/tailwindui
+LANGUAGES=html,react,vue,alpine
+BUILDINDEX=1
 ```
 
 ## 🤖 Automatically keep a **private** GitHub Repository up-to-date
@@ -104,10 +112,11 @@ You can automatically keep a **private** GitHub repository up-to-date with compo
              email: ${{ secrets.TAILWINDUI_EMAIL }}
              password: ${{ secrets.TAILWINDUI_PASSWORD }}
    ```
+   > NOTE: Make sure to update to the latest action `v1.1.0` to support the crawler v3+
 
    Read more about the schedule cron syntax in [the official GitHub Actions documentation](https://help.github.com/en/actions/reference/events-that-trigger-workflows#scheduled-events-schedule).
 
-   Note: if you're creating a new repository or have updated your default branch from `master`, you will have to specify with `branch` (and/or `current_branch`) like so:
+   > NOTE: if you're creating a new repository or have updated your default branch from `master`, you will have to specify with `branch` (and/or `current_branch`) like so:
 
    ```diff
    # ...
@@ -127,7 +136,7 @@ To be emailed whenever there is a change to a component, simply setup [GitHub No
 ## 🚦 Upgrading to v3.
 
 This is a major change. Unfortunately, v2 will no longer work with the existing
-site due to the updates they may to add support for React/Vue components. Please also note that the [GitHub Action](#-automatically-keep-a-private-github-repository-up-to-date) has been updated from ``v1.0.0`to`v1.1.0`.
+site due to the updates they may to add support for React/Vue components. Please also note that the [GitHub Action](#-automatically-keep-a-private-github-repository-up-to-date) has been updated from `v1.0.0` to `v1.1.0`.
 
 Currently, there is no support for transformers, as the need for them is not
 as critical since the components don't need to be converted to React or Vue.
