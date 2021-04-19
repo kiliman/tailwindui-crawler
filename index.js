@@ -58,17 +58,14 @@ function replaceTokens(html) {
   // replace tokens in page with constant so it won't generate superfluous diffs
   // also replace links to css/js assets to remove id querystring
   const regexTokens = /name="(csrf-token|_token)"\s+(content|value)="(.+?)"/gm
-  const regexAssets = /(src|href)="(.+?)\?id=.*?"/gm
+  const regexAssets = /(css|js)(\?id=[a-f0-9]+)/gm
   return html
     .replace(regexTokens, `name="$1" $2="CONSTANT_TOKEN"`)
-    .replace(regexAssets, `$1="$2"`)
+    .replace(regexAssets, '$1')
 }
 
 async function processSnippet(url, $snippet) {
-  const title = $snippet
-    .find('header>h2>a')
-    .text()
-    .trim()
+  const title = $snippet.find('header>h2>a').text().trim()
 
   const data = $snippet.attr('x-data')
   const json = JSON.parse(
@@ -78,25 +75,22 @@ async function processSnippet(url, $snippet) {
   const path = `${url}/${filename}`
 
   // output components by language
-  json.forEach(item => {
+  json.forEach((item) => {
     const language = item.language.toLowerCase()
     if (!languages.includes(language)) return
     saveLanguageContent(path, language, item.snippet)
   })
 
   // save resources required by snippet preview
-  var $iframe = $snippet.find('iframe')
-  var html = $iframe.attr('srcdoc')
+  const $iframe = $snippet.find('iframe')
+  const html = $iframe.attr('srcdoc')
 
   // if languages contains alpine, then save the preview as alpine
   if (languages.includes('alpine')) {
     const $body = cheerio.load(html)('body')
     // strip empty wrapper divs if present
     const $container = findFirstElementWithClass($body.children().first())
-    const code = $container
-      .parent()
-      .html()
-      .trim()
+    const code = $container.parent().html().trim()
 
     const disclaimer = `<!--
   This example requires Tailwind CSS v2.0+
@@ -176,7 +170,7 @@ async function login() {
   )
 }
 
-;(async function() {
+;(async function () {
   try {
     ensureDirExists(output)
 
