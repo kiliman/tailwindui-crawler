@@ -85,6 +85,15 @@
         "doc",
         "tool"
       ]
+    },
+    {
+      "login": "yagnik",
+      "name": "Yagnik",
+      "avatar_url": "https://avatars.githubusercontent.com/u/777296?v=4",
+      "profile": "https://github.com/yagnik",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
