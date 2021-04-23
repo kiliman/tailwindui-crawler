@@ -123,7 +123,7 @@ async function saveLanguageContent(path, language, code) {
 }
 async function savePageAndResources(url, html, $) {
   // download referenced css and js inside <head>
-  const items = $('head>link,script')
+  const items = $('head>link,script,img')
   for (let i = 0; i < items.length; i++) {
     const $item = $(items[i])
     const url = $item.attr('src') || $item.attr('href')
@@ -140,7 +140,7 @@ async function savePageAndResources(url, html, $) {
     const filePath = `${dir}/${basename(path)}`
 
     const response = await fetch(rootUrl + url)
-    const content = await response.text()
+    const content = await response.buffer()
     fs.writeFileSync(filePath, content)
     // just mark this url as already downloaded
     downloadCache.set(url, filePath)
