@@ -1,5 +1,6 @@
 require('dotenv-expand')(require('dotenv').config())
 const fs = require('fs')
+const { exit } = require('process')
 const nodeFetch = require('node-fetch')
 const fetch = require('fetch-cookie/node-fetch')(nodeFetch)
 // @ts-ignore
@@ -19,11 +20,27 @@ const languages = (process.env.LANGUAGES || 'html').split(',')
 const downloadCache = new Map()
 
 async function downloadPage(url) {
-  const response = await fetch(rootUrl + url)
-  const html = await response.text()
-  return html.trim()
+  let tries = 0
+  while (true) {
+    const start = new Date().getTime()
+    try {
+      const response = await fetch(rootUrl + url)
+      const html = await response.text()
+      return html.trim()
+    } catch (err) {
+      if (tries === 3) {
+        const elapsed = new Date().getTime() - start
+        console.error(
+          `❌  Error downloading ${
+            rootUrl + url
+          }\nRetries: ${tries} Elapsed time ${elapsed}ms\n${err}`,
+        )
+        exit(1)
+      }
+      tries++
+    }
+  }
 }
-
 async function postData(url, data) {
   return fetch(rootUrl + url, {
     method: 'POST',
@@ -107,7 +124,13 @@ async function processSnippet(url, $snippet) {
 
 function findFirstElementWithClass($elem) {
   // ignore empty class and elements with _style attribute
-  if ($elem.attr('class')?.length > 0 && !$elem.attr('_style')) return $elem
+  if (
+    $elem.attr('class') &&
+    $elem.attr('class').length > 0 &&
+    !$elem.attr('_style')
+  ) {
+    return $elem
+  }
   return findFirstElementWithClass($elem.children().first())
 }
 async function saveLanguageContent(path, language, code) {
