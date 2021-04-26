@@ -1,5 +1,6 @@
 require('dotenv-expand')(require('dotenv').config())
 const fs = require('fs')
+const { exit } = require('process')
 const nodeFetch = require('node-fetch')
 const fetch = require('fetch-cookie/node-fetch')(nodeFetch)
 // @ts-ignore
@@ -19,9 +20,20 @@ const languages = (process.env.LANGUAGES || 'html').split(',')
 const downloadCache = new Map()
 
 async function downloadPage(url) {
-  const response = await fetch(rootUrl + url)
-  const html = await response.text()
-  return html.trim()
+  const start = new Date().getTime()
+  try {
+    const response = await fetch(rootUrl + url)
+    const html = await response.text()
+    return html.trim()
+  } catch (err) {
+    const elapsed = new Date().getTime() - start
+    console.error(
+      `❌  Error downloading ${
+        rootUrl + url
+      }\nElapsed time ${elapsed}ms\n${err}`,
+    )
+    exit(1)
+  }
 }
 
 async function postData(url, data) {
