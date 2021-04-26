@@ -198,12 +198,7 @@ async function login() {
       console.log()
     }
     if (process.env.BUILDINDEX === '1') {
-      let preview = html.replace(
-        /\/img\/category-thumbnails-refresh\//g,
-        'https://tailwindui.com/img/category-thumbnails-refresh/',
-      )
-
-      preview = replaceTokens(preview)
+      const preview = replaceTokens(html)
 
       await savePageAndResources('/components', preview, $)
       fs.copyFileSync('./previewindex.html', `${output}/preview/index.html`)
