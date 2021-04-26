@@ -20,22 +20,27 @@ const languages = (process.env.LANGUAGES || 'html').split(',')
 const downloadCache = new Map()
 
 async function downloadPage(url) {
-  const start = new Date().getTime()
-  try {
-    const response = await fetch(rootUrl + url)
-    const html = await response.text()
-    return html.trim()
-  } catch (err) {
-    const elapsed = new Date().getTime() - start
-    console.error(
-      `❌  Error downloading ${
-        rootUrl + url
-      }\nElapsed time ${elapsed}ms\n${err}`,
-    )
-    exit(1)
+  let tries = 0
+  while (true) {
+    const start = new Date().getTime()
+    try {
+      const response = await fetch(rootUrl + url)
+      const html = await response.text()
+      return html.trim()
+    } catch (err) {
+      if (tries === 3) {
+        const elapsed = new Date().getTime() - start
+        console.error(
+          `❌  Error downloading ${
+            rootUrl + url
+          }\nRetries: ${tries} Elapsed time ${elapsed}ms\n${err}`,
+        )
+        exit(1)
+      }
+      tries++
+    }
   }
 }
-
 async function postData(url, data) {
   return fetch(rootUrl + url, {
     method: 'POST',
