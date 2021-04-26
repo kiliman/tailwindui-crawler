@@ -124,7 +124,13 @@ async function processSnippet(url, $snippet) {
 
 function findFirstElementWithClass($elem) {
   // ignore empty class and elements with _style attribute
-  if ($elem.attr('class')?.length > 0 && !$elem.attr('_style')) return $elem
+  if (
+    $elem.attr('class') &&
+    $elem.attr('class').length > 0 &&
+    !$elem.attr('_style')
+  ) {
+    return $elem
+  }
   return findFirstElementWithClass($elem.children().first())
 }
 async function saveLanguageContent(path, language, code) {
