@@ -24,20 +24,21 @@ async function fetchWithRetry(url, retries, options = {}) {
   let tries = 0
   while (true) {
     const start = new Date().getTime()
+    let response
     try {
-      const response = await fetch(url, options)
+      response = await fetch(url, options)
       const elapsed = new Date().getTime() - start
-      console.log(`⏱   ${elapsed}ms (${response.status}) ${url}`.substr(0, 80))
+      console.log(`⏱   ${elapsed}ms (${response.status}) ${url}`)
       return response
     } catch (err) {
+      const elapsed = new Date().getTime() - start
+      tries++
+      const status = response ? response.status : 500
+      console.log(`🔄  ${elapsed}ms (${status}) Try #${tries} ${url}`)
       if (tries === retries) {
-        const elapsed = new Date().getTime() - start
-        console.error(
-          `‼️  Error downloading ${url}\nRetries: ${tries} Elapsed time ${elapsed}ms\n${err}`,
-        )
+        console.log(`‼️   Error downloading ${url}.\n${err.message}`)
         exit(1)
       }
-      tries++
     }
   }
 }
@@ -216,6 +217,7 @@ async function login() {
 }
 
 ;(async function () {
+  const start = new Date().getTime()
   try {
     ensureDirExists(output)
 
@@ -249,10 +251,11 @@ async function login() {
       fs.copyFileSync('./previewindex.html', `${output}/preview/index.html`)
       console.log()
     }
-  } catch (ex) {
+  } catch (err) {
     console.error('‼️  ', ex)
     return 1
   }
-  console.log('🏁  Done!')
+  const elapsed = new Date().getTime() - start
+  console.log(`🏁  Done! ${elapsed / 1000} seconds`)
   return 0
 })()
