@@ -17,23 +17,20 @@ const rootUrl = 'https://tailwindui.com'
 const output = process.env.OUTPUT || './output'
 // list of languages to save (defaults to html)
 const languages = (process.env.LANGUAGES || 'html').split(',')
+const retries = 3
 const downloadCache = new Map()
 
-async function downloadPage(url) {
+async function fetchWithRetry(url, retries) {
   let tries = 0
   while (true) {
     const start = new Date().getTime()
     try {
-      const response = await fetch(rootUrl + url)
-      const html = await response.text()
-      return html.trim()
+      return await fetch(url)
     } catch (err) {
-      if (tries === 3) {
+      if (tries === retries) {
         const elapsed = new Date().getTime() - start
         console.error(
-          `❌  Error downloading ${
-            rootUrl + url
-          }\nRetries: ${tries} Elapsed time ${elapsed}ms\n${err}`,
+          `❌  Error downloading ${url}\nRetries: ${tries} Elapsed time ${elapsed}ms\n${err}`,
         )
         exit(1)
       }
@@ -41,6 +38,13 @@ async function downloadPage(url) {
     }
   }
 }
+
+async function downloadPage(url) {
+  const response = await fetchWithRetry(rootUrl + url, retries)
+  const html = await response.text()
+  return html.trim()
+}
+
 async function postData(url, data) {
   return fetch(rootUrl + url, {
     method: 'POST',
@@ -162,7 +166,7 @@ async function savePageAndResources(url, html, $) {
     ensureDirExists(dir)
     const filePath = `${dir}/${basename(path)}`
 
-    const response = await fetch(rootUrl + url)
+    const response = await fetchWithRetry(rootUrl + url, retries)
     const content = await response.buffer()
     fs.writeFileSync(filePath, content)
     // just mark this url as already downloaded
