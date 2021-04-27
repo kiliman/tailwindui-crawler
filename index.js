@@ -20,17 +20,20 @@ const languages = (process.env.LANGUAGES || 'html').split(',')
 const retries = 3
 const downloadCache = new Map()
 
-async function fetchWithRetry(url, retries) {
+async function fetchWithRetry(url, retries, options = {}) {
   let tries = 0
   while (true) {
     const start = new Date().getTime()
     try {
-      return await fetch(url)
+      const response = await fetch(url, options)
+      const elapsed = new Date().getTime() - start
+      console.log(`⏱   ${elapsed}ms (${response.status}) ${url}`.substr(0, 80))
+      return response
     } catch (err) {
       if (tries === retries) {
         const elapsed = new Date().getTime() - start
         console.error(
-          `❌  Error downloading ${url}\nRetries: ${tries} Elapsed time ${elapsed}ms\n${err}`,
+          `‼️  Error downloading ${url}\nRetries: ${tries} Elapsed time ${elapsed}ms\n${err}`,
         )
         exit(1)
       }
@@ -166,10 +169,25 @@ async function savePageAndResources(url, html, $) {
     ensureDirExists(dir)
     const filePath = `${dir}/${basename(path)}`
 
-    const response = await fetchWithRetry(rootUrl + url, retries)
+    let options = {}
+    if (fs.existsSync(filePath)) {
+      const stat = fs.statSync(filePath)
+      options = {
+        method: 'GET',
+        headers: {
+          'If-Modified-Since': stat.mtime.toUTCString(),
+        },
+      }
+    }
+
+    const response = await fetchWithRetry(rootUrl + url, retries, options)
+    if (response.status === 304) {
+      // just mark this url as already downloaded
+      downloadCache.set(url, filePath)
+      continue
+    }
     const content = await response.buffer()
     fs.writeFileSync(filePath, content)
-    // just mark this url as already downloaded
     downloadCache.set(url, filePath)
   }
   if (html) {
@@ -226,7 +244,7 @@ async function login() {
     }
     if (process.env.BUILDINDEX === '1') {
       const preview = replaceTokens(html)
-
+      console.log('⏳  Saving preview page... this may take awhile')
       await savePageAndResources('/components', preview, $)
       fs.copyFileSync('./previewindex.html', `${output}/preview/index.html`)
       console.log()
