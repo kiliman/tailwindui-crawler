@@ -19,6 +19,8 @@ const output = process.env.OUTPUT || './output'
 const languages = (process.env.LANGUAGES || 'html').split(',')
 const retries = 3
 const downloadCache = new Map()
+let oldAssets = {}
+let newAssets = {}
 
 async function fetchWithRetry(url, retries, options = {}) {
   let tries = 0
@@ -152,6 +154,7 @@ async function saveLanguageContent(path, language, code) {
   console.log(`📝  Writing ${language} ${filename}.${ext}`)
   fs.writeFileSync(filePath, code)
 }
+
 async function savePageAndResources(url, html, $) {
   // download referenced css and js inside <head>
   const items = $('head>link,script,img')
@@ -160,36 +163,34 @@ async function savePageAndResources(url, html, $) {
     const url = $item.attr('src') || $item.attr('href')
     if (!url || !url.startsWith('/')) continue
 
-    // check cache to see if we've already downloaded this file
-    if (downloadCache.has(url)) continue
-
     // strip off querystring
     const qsIndex = url.indexOf('?')
     const path = qsIndex > 0 ? url.substring(0, qsIndex) : url
     const dir = `${output}/preview${dirname(path)}`
-    ensureDirExists(dir)
     const filePath = `${dir}/${basename(path)}`
+    // check assets to see if we've already downloaded this file
+    if (newAssets[filePath]) continue
+
+    ensureDirExists(dir)
 
     let options = {}
-    if (fs.existsSync(filePath)) {
-      const stat = fs.statSync(filePath)
+    if (oldAssets[filePath]) {
       options = {
         method: 'GET',
         headers: {
-          'If-Modified-Since': stat.mtime.toUTCString(),
+          'If-None-Match': oldAssets[filePath], // etag from previous GET
         },
       }
     }
 
     const response = await fetchWithRetry(rootUrl + url, retries, options)
+    // save etag
+    newAssets[filePath] = response.headers.get('etag')
     if (response.status === 304) {
-      // just mark this url as already downloaded
-      downloadCache.set(url, filePath)
       continue
     }
     const content = await response.buffer()
     fs.writeFileSync(filePath, content)
-    downloadCache.set(url, filePath)
   }
   if (html) {
     // write preview index page
@@ -220,7 +221,12 @@ async function login() {
   const start = new Date().getTime()
   try {
     ensureDirExists(output)
-
+    if (process.env.BUILDINDEX === '1') {
+      // load old preview assets
+      if (fs.existsSync(`${output}/preview/assets.json`)) {
+        oldAssets = JSON.parse(fs.readFileSync(`${output}/preview/assets.json`))
+      }
+    }
     console.log('🔐  Logging into tailwindui.com...')
     const success = await login()
     if (!success) {
@@ -250,9 +256,24 @@ async function login() {
       await savePageAndResources('/components', preview, $)
       fs.copyFileSync('./previewindex.html', `${output}/preview/index.html`)
       console.log()
+
+      // clean up old assets that are not in new assets
+      Object.keys(oldAssets)
+        .filter((path) => newAssets[path] === undefined)
+        .forEach((path) => {
+          if (fs.existsSync(path)) {
+            fs.unlinkSync(path)
+          }
+        })
+
+      // save assets file
+      fs.writeFileSync(
+        `${output}/preview/assets.json`,
+        JSON.stringify(newAssets, null, 2),
+      )
     }
   } catch (err) {
-    console.error('‼️  ', ex)
+    console.error('‼️  ', err)
     return 1
   }
   const elapsed = new Date().getTime() - start
