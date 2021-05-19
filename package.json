@@ -22,5 +22,8 @@
     "form-urlencoded": "^6.0.0",
     "node-fetch": "^2.6.0",
     "string.prototype.matchall": "^4.0.2"
+  },
+  "bin": {
+    "tailwindui-crawler": "./index.js"
   }
 }

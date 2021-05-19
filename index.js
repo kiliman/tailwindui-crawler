@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 require('dotenv-expand')(require('dotenv').config())
 const fs = require('fs')
 const _path = require('path');
