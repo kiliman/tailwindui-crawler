@@ -1,5 +1,6 @@
 require('dotenv-expand')(require('dotenv').config())
 const fs = require('fs')
+const _path = require('path');
 const { exit } = require('process')
 const nodeFetch = require('node-fetch')
 const fetch = require('fetch-cookie/node-fetch')(nodeFetch)
@@ -254,7 +255,7 @@ async function login() {
       const preview = replaceTokens(html)
       console.log('⏳  Saving preview page... this may take awhile')
       await savePageAndResources('/components', preview, $)
-      fs.copyFileSync('./previewindex.html', `${output}/preview/index.html`)
+      fs.copyFileSync(_path.join(__dirname, 'previewindex.html'), `${output}/preview/index.html`)
       console.log()
 
       // clean up old assets that are not in new assets
