@@ -94,7 +94,7 @@ function replaceTokens(html) {
 }
 
 async function processSnippet(url, $snippet) {
-  const title = $snippet.find('header>h2>a').text().trim()
+  const title = $snippet.find('h2>a').text().trim()
 
   const data = $snippet.attr('x-data')
   const json = JSON.parse(
