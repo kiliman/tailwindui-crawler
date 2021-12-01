@@ -20,9 +20,9 @@ const output = process.env.OUTPUT || './output'
 // list of languages to save (defaults to html)
 const languages = (process.env.LANGUAGES || 'html').split(',')
 const retries = 3
-const downloadCache = new Map()
 let oldAssets = {}
 let newAssets = {}
+const regexEmail = new RegExp(process.env.EMAIL.replace(/[.@]/g, '\\$&'), 'g')
 
 async function fetchWithRetry(url, retries, options = {}) {
   let tries = 0
@@ -198,6 +198,7 @@ async function savePageAndResources(url, html, $) {
     // write preview index page
     const dir = `${output}/preview${url}`
     ensureDirExists(dir)
+    html = html.replace(regexEmail, 'Licensed User')
     fs.writeFileSync(`${dir}/index.html`, html)
     console.log(`📝  Writing ${url}/index.html`)
   }
