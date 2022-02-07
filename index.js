@@ -117,9 +117,14 @@ async function processSnippet(url, $snippet) {
   // if languages contains alpine, then save the preview as alpine
   if (languages.includes('alpine')) {
     const $body = cheerio.load(html)('body')
+    // default code to body
+    let code = $body.html().trim()
     // strip empty wrapper divs if present
-    const $container = findFirstElementWithClass($body.children().first())
-    const code = $container.parent().html().trim()
+    let $container = findFirstElementWithClass($body.children().first())
+
+    if ($container) {
+      code = $container.parent().html().trim()
+    }
 
     const disclaimer = `<!--
   This example requires Tailwind CSS v2.0+
@@ -143,6 +148,7 @@ function findFirstElementWithClass($elem) {
   ) {
     return $elem
   }
+  if ($elem.children().length === 0) return null
   return findFirstElementWithClass($elem.children().first())
 }
 async function saveLanguageContent(path, language, code) {
