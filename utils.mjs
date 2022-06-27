@@ -1,7 +1,7 @@
-const fs = require('fs')
+import * as fs from 'fs'
 
-module.exports.kebab = s => s.toLowerCase().replace(/[^\w.]/g, '-')
-module.exports.camelCase = s => {
+export const kebab = (s) => s.toLowerCase().replace(/[^\w.]/g, '-')
+export const camelCase = (s) => {
   const matches = Array.from(s.matchAll(/[a-zA-Z0-9]+/g))
   return (
     matches[0][0].toLowerCase() +
@@ -12,28 +12,26 @@ module.exports.camelCase = s => {
   )
 }
 
-module.exports.cleanFilename = filename =>
+export const cleanFilename = (filename) =>
   filename
     .toLowerCase()
     .replace(/[^\w.]/g, '_')
     .replace(/^_+|_+$/g, '')
 
-module.exports.ensureDirExists = dir => {
+export const ensureDirExists = (dir) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true })
   }
 }
 
-module.exports.mergeDeep = mergeDeep
-
-function mergeDeep(target, source) {
-  const isObject = obj => obj && typeof obj === 'object'
+export function mergeDeep(target, source) {
+  const isObject = (obj) => obj && typeof obj === 'object'
 
   if (!isObject(target) || !isObject(source)) {
     return source
   }
 
-  Object.keys(source).forEach(key => {
+  Object.keys(source).forEach((key) => {
     const targetValue = target[key]
     const sourceValue = source[key]
 
