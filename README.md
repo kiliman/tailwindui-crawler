@@ -1,7 +1,9 @@
 # tailwindui-crawler
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <img src="./images/tailwindui-crawler.png">
@@ -24,6 +26,8 @@ OUTPUT=/path/to/output
 LANGUAGES=html,react,vue,alpine
 # BUILDINDEX generate index file to view components offline
 BUILDINDEX=(0 | 1)
+# TEMPLATES download template files
+TEMPLATES=(0 | 1)
 ```
 
 > NOTE: The tool uses [dotenv-expand](https://github.com/motdotla/dotenv-expand)
@@ -32,7 +36,7 @@ BUILDINDEX=(0 | 1)
 > escape the `$`. For example, `PASSWORD=p@\$\$w0rd`
 >
 > Also, `dotenv` does **not** support inline comments, so do not do something
-> like `LANGUAGES=html,react,vue  # some comment` as it will not get the correct
+> like `LANGUAGES=html,react,vue # some comment` as it will not get the correct
 > values.
 
 Then finally, run `yarn start` or `npm start`
@@ -47,7 +51,10 @@ private repo, and by running this periodically, you can see exactly which files 
 or changed. Hopefully, some time in the future, they will open up a private repo for those
 that have purchased the library.
 
-## 🚀 New v3.0
+## 🚀 New v4.0
+
+The crawler has been updated to support the new Tailwind UI site as of 2022-06-27. You can
+also download the new Page Templates. Add `TEMPLATES=1` to your _.env_ file.
 
 The crawler now supports the new Tailwind UI site and can download HTML, React
 and Vue versions of the components.
@@ -82,6 +89,7 @@ PASSWORD=******
 OUTPUT=$HOME/Projects/tailwindui
 LANGUAGES=html,react,vue,alpine
 BUILDINDEX=1
+TEMPLATES=1
 ```
 
 ## 🤖 Automatically keep a **private** GitHub Repository up-to-date
@@ -112,6 +120,7 @@ You can automatically keep a **private** GitHub repository up-to-date with compo
              email: ${{ secrets.TAILWINDUI_EMAIL }}
              password: ${{ secrets.TAILWINDUI_PASSWORD }}
    ```
+
    > NOTE: Make sure to update to the latest action `v1.1.0` to support the crawler v3+
 
    Read more about the schedule cron syntax in [the official GitHub Actions documentation](https://help.github.com/en/actions/reference/events-that-trigger-workflows#scheduled-events-schedule).
