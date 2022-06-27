@@ -54,7 +54,7 @@ that have purchased the library.
 ## 🚀 New v4.0
 
 The crawler has been updated to support the new Tailwind UI site as of 2022-06-27. You can
-also download the new Page Templates. Add `TEMPLATES=1` to your _.env_ file.
+also download the new Page Templates. Add `TEMPLATES=1` to your _.env_ file. If you are using the GitHub action to crawl, you will need to update your deploy.yml. See instructions below.
 
 The crawler now supports the new Tailwind UI site and can download HTML, React
 and Vue versions of the components.
@@ -94,6 +94,8 @@ TEMPLATES=1
 
 ## 🤖 Automatically keep a **private** GitHub Repository up-to-date
 
+**NOTE**: GitHub action has been updated in v4.0.0. Please make sure your _default.yml_ file is updated with the latest actions.
+
 You can automatically keep a **private** GitHub repository up-to-date with component changes from TailwindUI by using this tool with GitHub Actions.
 
 1. [Create a **private** GitHub repository](https://github.com/new/).
@@ -115,7 +117,7 @@ You can automatically keep a **private** GitHub repository up-to-date with compo
          - name: Checkout
            uses: actions/checkout@v2
          - name: Run crawler
-           uses: gregbrimble/tailwindui-crawler-action@v1.1.0
+           uses: kiliman/tailwindui-crawler-action@v1.3.0
            with:
              email: ${{ secrets.TAILWINDUI_EMAIL }}
              password: ${{ secrets.TAILWINDUI_PASSWORD }}
