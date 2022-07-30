@@ -132,7 +132,7 @@ You can automatically keep a **private** GitHub repository up-to-date with compo
    ```diff
    # ...
          - name: Run crawler
-           uses: gregbrimble/tailwindui-crawler-action@v1.1.0
+           uses: kiliman/tailwindui-crawler-action@v1.3.0
            with:
              email: ${{ secrets.TAILWINDUI_EMAIL }}
              password: ${{ secrets.TAILWINDUI_PASSWORD }}
