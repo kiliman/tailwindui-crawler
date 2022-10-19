@@ -76,7 +76,7 @@ async function fetchHttps(url, options = {}, body = undefined) {
     const uri = new URL(url)
     options = {
       hostname: uri.hostname,
-      port: uri.port ?? 443,
+      port: uri.port || 443,
       path: uri.pathname + uri.search,
       method: 'GET',
       ...options,
