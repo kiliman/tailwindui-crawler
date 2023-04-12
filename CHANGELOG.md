@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v4.0.2
+
+- 🐛 fix TypeError: reject.err is not a function [#77](https://github.com/kiliman/tailwindui-crawler/pull/77)
+
 ## v4.0.1
 
 - 🔨 Specify node version supported node >= 12
