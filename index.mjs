@@ -105,7 +105,7 @@ async function fetchHttps(url, options = {}, body = undefined) {
     })
 
     req.on('error', (error) => {
-      reject.err(error)
+      reject(error)
     })
     if (body) {
       req.write(body)
