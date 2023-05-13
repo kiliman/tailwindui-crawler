@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v4.1.0
+
+- ✨ Add COMPONENTS option to specify which component packages to download (defaults to all) [#71](https://github.com/kiliman/tailwindui-crawler/issues/71)
+
 ## v4.0.2
 
 - 🐛 fix TypeError: reject.err is not a function [#77](https://github.com/kiliman/tailwindui-crawler/pull/77)

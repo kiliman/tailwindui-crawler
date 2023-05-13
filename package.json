@@ -1,6 +1,6 @@
 {
   "name": "tailwindui-crawler",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "Download TailwindUI components",
   "main": "index.mjs",
   "type": "module",
