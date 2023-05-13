@@ -1,7 +1,9 @@
 # tailwindui-crawler
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <img src="./images/tailwindui-crawler.png">
@@ -22,6 +24,8 @@ PASSWORD=yourpassword
 OUTPUT=/path/to/output
 # LANGUAGES defaults to html
 LANGUAGES=html,react,vue,alpine
+# COMPONENTS commma-delimited list (defaults to all)
+COMPONENTS=(all|marketing,application-ui,ecommerce)
 # BUILDINDEX generate index file to view components offline
 BUILDINDEX=(0 | 1)
 # TEMPLATES download template files
@@ -86,6 +90,7 @@ EMAIL=******
 PASSWORD=******
 OUTPUT=$HOME/Projects/tailwindui
 LANGUAGES=html,react,vue,alpine
+COMPONENTS=marketing,application-ui
 BUILDINDEX=1
 TEMPLATES=1
 ```

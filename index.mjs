@@ -65,6 +65,8 @@ const rootUrl = 'https://tailwindui.com'
 const output = process.env.OUTPUT || './output'
 // list of languages to save (defaults to html)
 const languages = (process.env.LANGUAGES || 'html').split(',')
+// list of components to save (defaults to all)
+const components = (process.env.COMPONENTS || 'all').split(',')
 const retries = 3
 let oldAssets = {}
 let newAssets = {}
@@ -422,6 +424,14 @@ async function saveTemplates() {
       const link = links[i]
       const url = $(link).attr('href')
       if (!url.startsWith('/components')) continue
+      // check if component is in list of components to save
+      const component = url.split('/')[2]
+      if (
+        component &&
+        components[0] !== 'all' &&
+        !components.includes(component)
+      )
+        continue
       urls.push(url)
     }
     const count = process.env.COUNT || urls.length
