@@ -1,5 +1,11 @@
 # CHANGELOG
 
+
+## v4.1.1
+
+- 🐛 Update URL handling to check if link already has root url
+- 📦 Update to latest packages
+
 ## v4.1.0
 
 - ✨ Add COMPONENTS option to specify which component packages to download (defaults to all) [#71](https://github.com/kiliman/tailwindui-crawler/issues/71)
