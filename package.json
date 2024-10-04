@@ -12,19 +12,19 @@
     "start": "node index.mjs"
   },
   "devDependencies": {
-    "all-contributors-cli": "^6.14.0",
-    "prettier": "^2.2.1"
+    "all-contributors-cli": "^6.26.1",
+    "prettier": "^3.3.3"
   },
   "dependencies": {
-    "cheerio": "^1.0.0-rc.6",
-    "cookie": "^0.5.0",
-    "dotenv": "^8.2.0",
-    "dotenv-expand": "^5.1.0",
-    "form-urlencoded": "^6.0.0",
-    "string.prototype.matchall": "^4.0.2"
+    "cheerio": "^1.0.0",
+    "cookie": "^0.7.1",
+    "dotenv": "^16.4.5",
+    "dotenv-expand": "^11.0.6",
+    "form-urlencoded": "^6.1.5",
+    "string.prototype.matchall": "^4.0.11"
   },
   "bin": "./index.mjs",
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=16.0.0"
   }
 }

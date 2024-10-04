@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as cheerio from 'cheerio'
 import * as dotenv from 'dotenv'
-import dotenvExpand from 'dotenv-expand'
+import { expand } from 'dotenv-expand'
 import * as fs from 'fs'
 import https from 'https'
 import * as _path from 'path'
@@ -9,7 +9,7 @@ import { exit } from 'process'
 // polyfill matchAll for node versions < 12
 import matchAll from 'string.prototype.matchall'
 
-dotenvExpand(dotenv.config())
+expand(dotenv.config())
 matchAll.shim()
 
 const { dirname, basename } = _path
