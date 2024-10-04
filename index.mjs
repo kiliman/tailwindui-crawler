@@ -162,16 +162,20 @@ function parseSetCookieHeaders(setCookieHeaders) {
 }
 
 async function downloadPage(url) {
-  const response = await fetchWithRetry(rootUrl + url, retries)
+  if (!url.startsWith(rootUrl)) url = rootUrl + url
+
+  const response = await fetchWithRetry(url, retries)
   const html = await response.text()
   return html.trim()
 }
 
 async function postData(url, data) {
+  if (!url.startsWith(rootUrl)) url = rootUrl + url
+
   const body = JSON.stringify(data)
 
   return fetchHttps(
-    rootUrl + url,
+    url,
     {
       method: 'POST',
       headers: {
@@ -396,6 +400,12 @@ async function saveTemplates() {
   }
 }
 
+function debugLog(...args) {
+  if (process.env.DEBUG === '1') {
+    console.log(...args)
+  }
+}
+
 ;(async function () {
   const start = new Date().getTime()
   try {
@@ -420,10 +430,14 @@ async function saveTemplates() {
     const library = {}
     const links = $('.grid a')
     let urls = []
+
+    debugLog(`📣  Found ${links.length} links`)
+
     for (let i = 0; i < links.length; i++) {
       const link = links[i]
       const url = $(link).attr('href')
-      if (!url.startsWith('/components')) continue
+      debugLog(`📣   ${i + 1}: ${url}`)
+      if (!url || !url.match(/\/components\//)) continue
       // check if component is in list of components to save
       const component = url.split('/')[2]
       if (
@@ -437,7 +451,7 @@ async function saveTemplates() {
     const count = process.env.COUNT || urls.length
     for (let i = 0; i < count; i++) {
       const url = urls[i]
-      console.log(`⏳  Processing ${url}...`)
+      console.log(`⏳  Processing #${i + 1}: ${url}...`)
       const components = await processComponentPage(url)
       mergeDeep(library, components)
       console.log()
