@@ -240,7 +240,10 @@ function replaceTokens(html) {
 async function processComponent(url, component) {
   const title = component.name
   const filename = cleanFilename(title)
-  const path = `${url}/${filename}`
+
+  // Remove the rootUrl from the url to get the local path
+  const localOutput = url.replace('https://tailwindui.com', '')
+  const path = `${localOutput}/${filename}`
 
   // output snippets by language
   component.snippets.forEach((snippet) => {
@@ -439,7 +442,9 @@ function debugLog(...args) {
       debugLog(`📣   ${i + 1}: ${url}`)
       if (!url || !url.match(/\/components\//)) continue
       // check if component is in list of components to save
-      const component = url.split('/')[2]
+      // Example URL: https://tailwindui.com/components/application-ui/navigation/navbars
+      // Parse out "application-ui" | "marketing" | "ecommerce" from the URL to ensure we only download the components we want
+      const component = url.split('/')[4]
       if (
         component &&
         components[0] !== 'all' &&
