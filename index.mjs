@@ -169,7 +169,7 @@ async function downloadPage(url) {
   return html.trim()
 }
 
-async function postData(url, data) {
+async function postData(url, data, method = 'POST') {
   if (!url.startsWith(rootUrl)) url = rootUrl + url
 
   const body = JSON.stringify(data)
@@ -177,7 +177,7 @@ async function postData(url, data) {
   return fetchHttps(
     url,
     {
-      method: 'POST',
+      method,
       headers: {
         'content-type': 'application/json',
         'content-length': Buffer.byteLength(body),
@@ -243,11 +243,11 @@ async function processComponent(url, component) {
   const path = `${url}/${filename}`
 
   // output snippets by language
-  component.snippets.forEach((snippet) => {
-    const language = snippet.language.toLowerCase()
-    if (!languages.includes(language)) return
-    saveLanguageContent(path, language, snippet.snippet)
-  })
+  const snippet = component.snippet
+
+  const language = snippet.name.toLowerCase()
+  if (!languages.includes(language)) return
+  saveLanguageContent(path, language, snippet.code)
 
   // save resources required by snippet preview
   const html = component.iframeHtml
@@ -288,6 +288,7 @@ function findFirstElementWithClass($elem) {
   if ($elem.children().length === 0) return null
   return findFirstElementWithClass($elem.children().first())
 }
+
 async function saveLanguageContent(path, language, code) {
   const ext =
     language === 'react' ? 'jsx' : language === 'alpine' ? 'html' : language
@@ -356,6 +357,17 @@ async function login() {
     remember: false,
   })
   return response.status === 409 || response.status === 302
+}
+
+async function switchSnippetLanguage(language) {
+  const response = await postData(
+    '/snippet-language',
+    {
+      snippet_lang: `${language}-v3`,
+    },
+    'PUT',
+  )
+  return response.status === 303
 }
 
 async function saveTemplates() {
@@ -449,13 +461,25 @@ function debugLog(...args) {
       urls.push(url)
     }
     const count = process.env.COUNT || urls.length
+
     for (let i = 0; i < count; i++) {
       const url = urls[i]
       console.log(`⏳  Processing #${i + 1}: ${url}...`)
-      const components = await processComponentPage(url)
-      mergeDeep(library, components)
-      console.log()
+      for (let j = 0; j < languages.length; j++) {
+        const language = languages[j]
+        console.log(`🔍  Switching to language: ${language}`)
+        const success = await switchSnippetLanguage(language)
+
+        if (!success) {
+          console.log(`🚫  Could not switch to language: ${language}`)
+          return 1
+        }
+        const components = await processComponentPage(url)
+        mergeDeep(library, components)
+        console.log()
+      }
     }
+
     if (process.env.BUILDINDEX === '1') {
       const preview = replaceTokens(html)
       console.log('⏳  Saving preview page... this may take awhile')
