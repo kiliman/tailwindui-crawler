@@ -26,6 +26,38 @@ export const camelCase = (s) => {
   )
 }
 
+// Convert kebab-case or snake_case to PascalCase
+export const toPascalCase = (str) => {
+  return str
+    .split(/[-_]/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join('')
+}
+
+// Generate component name from path parts
+export const generateComponentName = (path) => {
+  // Extract folder and file name information
+  const pathParts = path.split('/')
+  const fileName = pathParts[pathParts.length - 1]
+
+  // Generate a component name based on meaningful parts of the path
+  // Skip 'ui-blocks' and use more descriptive parts
+  const meaningfulParts = pathParts.filter(
+    (part) => !['ui-blocks', 'index'].includes(part) && part !== fileName,
+  )
+
+  // Take the last category and subcategory (if available)
+  const relevantParts = meaningfulParts.slice(
+    Math.max(0, meaningfulParts.length - 2),
+  )
+
+  // Add the filename to the parts we'll use for the component name
+  relevantParts.push(fileName)
+
+  // Create the component name
+  return relevantParts.map((part) => toPascalCase(part)).join('')
+}
+
 export const cleanFilename = (filename) =>
   filename
     .toLowerCase()
@@ -61,17 +93,26 @@ export function mergeDeep(target, source) {
   return target
 }
 
-const rootUrl = 'https://tailwindui.com'
+const rootUrl = 'https://tailwindcss.com/plus'
 const output = process.env.OUTPUT || './output'
 // list of languages to save (defaults to html)
 const languages = (process.env.LANGUAGES || 'html').split(',')
 // list of components to save (defaults to all)
 const components = (process.env.COMPONENTS || 'all').split(',')
+// force update even if component already exists
+const forceUpdate = process.env.FORCE_UPDATE === '1'
 const retries = 3
 let oldAssets = {}
 let newAssets = {}
 const regexEmail = new RegExp(process.env.EMAIL.replace(/[.@]/g, '\\$&'), 'g')
 let cookies = {}
+// Component tracking
+let processedCategories = new Set()
+let processedComponents = 0
+// Template tracking
+let processedTemplates = 0
+// Skip tracking
+let skippedComponents = 0
 
 async function fetchHttps(url, options = {}, body = undefined) {
   return new Promise((resolve, reject) => {
@@ -205,10 +246,35 @@ async function processComponentPage(url) {
     console.log(`🚫   Not logged in`)
     process.exit()
   }
+
+  // Track this category
+  processedCategories.add(url)
+
   const $ = cheerio.load(html)
   // component data stored in #app data-page attribute
   const json = $('#app').attr('data-page')
+  console.log(`Debug: url = ${url}`)
+  console.log(`Debug: json data = ${json ? 'found' : 'not found'}`)
+
+  if (!json) {
+    console.log('🚫   No component data found')
+    console.log('Debug: HTML structure:')
+    console.log($('body').html().slice(0, 500)) // Get a sample of the HTML
+    return {}
+  }
+
   const data = JSON.parse(json)
+  console.log(`Debug: data structure:`, Object.keys(data))
+  console.log(`Debug: props structure:`, Object.keys(data.props || {}))
+
+  if (
+    !data.props ||
+    !data.props.subcategory ||
+    !data.props.subcategory.components
+  ) {
+    console.log('🚫   No components found in data structure')
+    return {}
+  }
 
   const components = data.props.subcategory.components
   console.log(
@@ -216,6 +282,11 @@ async function processComponentPage(url) {
       components.length === 1 ? '' : 's'
     }`,
   )
+
+  // Debug the structure of the first component
+  if (components.length > 0) {
+    console.log(`Debug: first component structure:`, Object.keys(components[0]))
+  }
 
   for (let i = 0; i < components.length; i++) {
     await processComponent(url, components[i])
@@ -242,17 +313,48 @@ async function processComponent(url, component) {
   const filename = cleanFilename(title)
   const path = `${url}/${filename}`
 
-  // output snippets by language
-  component.snippets.forEach((snippet) => {
-    const language = snippet.language.toLowerCase()
-    if (!languages.includes(language)) return
-    saveLanguageContent(path, language, snippet.snippet)
-  })
+  // Track this component
+  processedComponents++
+
+  // Log component structure in debug mode
+  if (process.env.DEBUG === '1') {
+    console.log(`Debug: Processing component: ${title}`)
+    console.log(
+      `Debug: Component snippet:`,
+      component.snippet ? 'present' : 'missing',
+    )
+    if (component.snippet) {
+      console.log(`Debug: Snippet keys:`, Object.keys(component.snippet))
+      // Log available languages in the snippet
+      console.log(`Debug: Snippet language:`, component.snippet.language)
+      console.log(`Debug: All available snippet properties:`, component.snippet)
+    }
+  }
+
+  // Check if component has a snippet property
+  if (component.snippet) {
+    const snippet = component.snippet
+
+    // Get the language from the snippet
+    const snippetLanguage = snippet.language?.toLowerCase()
+
+    // Save the code if the language is in our requested languages list
+    if (snippetLanguage && languages.includes(snippetLanguage)) {
+      console.log(`Debug: Saving ${snippetLanguage} code for ${title}`)
+      saveLanguageContent(path, snippetLanguage, snippet.code)
+    }
+
+    // Also save as react/jsx if available and react is in our languages list
+    if (snippetLanguage === 'jsx' && languages.includes('react')) {
+      console.log(`Debug: Saving react code for ${title}`)
+      saveLanguageContent(path, 'react', snippet.code)
+    }
+  }
 
   // save resources required by snippet preview
   const html = component.iframeHtml
   // if languages contains alpine, then save the preview as alpine
-  if (languages.includes('alpine')) {
+  if (languages.includes('alpine') && html) {
     const $body = cheerio.load(html)('body')
     // default code to body
     let code = $body.html().trim()
@@ -273,7 +375,7 @@ async function processComponent(url, component) {
     saveLanguageContent(path, 'alpine', `${disclaimer}${code}`)
   }
 
-  await savePageAndResources(url, null, cheerio.load(html))
+  await savePageAndResources(url, null, cheerio.load(html || ''))
 }
 
 function findFirstElementWithClass($elem) {
@@ -288,14 +390,57 @@ function findFirstElementWithClass($elem) {
   if ($elem.children().length === 0) return null
   return findFirstElementWithClass($elem.children().first())
 }
+
 async function saveLanguageContent(path, language, code) {
   const ext =
     language === 'react' ? 'jsx' : language === 'alpine' ? 'html' : language
   const dir = `${output}/${language}${dirname(path)}`
+
+  if (process.env.DEBUG === '1') {
+    console.log(`Debug: Saving language content for ${language}`)
+    console.log(`Debug: Directory: ${dir}`)
+    console.log(`Debug: Path: ${path}`)
+    console.log(`Debug: Has code: ${code ? 'yes' : 'no'}`)
+    if (code) {
+      console.log(`Debug: Code length: ${code.length}`)
+    }
+  }
+
   ensureDirExists(dir)
 
   const filename = basename(path)
   const filePath = `${dir}/${filename}.${ext}`
+
+  // Check if file already exists and skip if not forced to update
+  if (!forceUpdate && fs.existsSync(filePath)) {
+    console.log(`🔄 Skipping ${language} ${filename}.${ext} (already exists)`)
+    skippedComponents++
+    return
+  }
+
+  // For React components, replace Example() with a proper component name
+  if (language === 'react' && code) {
+    const componentName = generateComponentName(path)
+
+    // Handle both function declaration patterns
+    if (code.includes('export default function Example()')) {
+      code = code.replace(
+        'export default function Example()',
+        `export default function ${componentName}()`,
+      )
+
+      if (process.env.DEBUG === '1') {
+        console.log(`Debug: Renamed component to ${componentName}`)
+      }
+    } else if (code.includes('function Example()')) {
+      code = code.replace('function Example()', `function ${componentName}()`)
+
+      if (process.env.DEBUG === '1') {
+        console.log(`Debug: Renamed component to ${componentName}`)
+      }
+    }
+  }
+
   console.log(`📝  Writing ${language} ${filename}.${ext}`)
   fs.writeFileSync(filePath, code)
 }
@@ -374,9 +519,20 @@ async function saveTemplates() {
     const url = $link.attr('href')
     console.log(`🔍  Downloading template ${title}`)
 
+    // Track this template
+    processedTemplates++
+
     const path = new URL(url).pathname
     const dir = `${output}${dirname(path)}`
     const filePath = `${dir}/${basename(path)}.zip`
+
+    // Skip if the template already exists and force update is disabled
+    if (!forceUpdate && fs.existsSync(filePath)) {
+      console.log(`🔄  Skipping template ${title} (already exists)`)
+      skippedComponents++
+      continue
+    }
+
     ensureDirExists(dir)
 
     let options = {}
@@ -406,6 +562,22 @@ function debugLog(...args) {
   }
 }
 
+function countFilesRecursively(dirPath) {
+  let count = 0
+  const files = fs.readdirSync(dirPath)
+
+  for (const file of files) {
+    const fullPath = _path.join(dirPath, file)
+    if (fs.statSync(fullPath).isDirectory()) {
+      count += countFilesRecursively(fullPath)
+    } else {
+      count++
+    }
+  }
+
+  return count
+}
+
 ;(async function () {
   const start = new Date().getTime()
   try {
@@ -424,7 +596,12 @@ function debugLog(...args) {
     console.log('✅  Success!\n')
 
     console.log(`🗂   Output is ${output}`)
-    const html = await downloadPage('/components')
+    if (forceUpdate) {
+      console.log(`🔄  Force update enabled - will overwrite existing files`)
+    } else {
+      console.log(`🔄  Force update disabled - will skip existing files`)
+    }
+    const html = await downloadPage('/ui-blocks')
     const $ = cheerio.load(html)
 
     const library = {}
@@ -437,17 +614,34 @@ function debugLog(...args) {
       const link = links[i]
       const url = $(link).attr('href')
       debugLog(`📣   ${i + 1}: ${url}`)
-      if (!url || !url.match(/\/components\//)) continue
+      if (!url || !url.match(/\/ui-blocks\//)) continue
+
       // check if component is in list of components to save
-      const component = url.split('/')[2]
+      const urlParts = url.split('/')
+      const componentIndex = urlParts.indexOf('ui-blocks') + 1
+      const component = urlParts[componentIndex]
       if (
         component &&
         components[0] !== 'all' &&
         !components.includes(component)
       )
         continue
-      urls.push(url)
+
+      // Make sure it's a full URL, if not prepend rootUrl
+      if (url.startsWith('/')) {
+        urls.push(url)
+      } else if (url.includes('/ui-blocks/')) {
+        urls.push(url.replace('https://tailwindcss.com/plus', ''))
+      }
     }
+
+    // Add missing marketing URL if not already in the list
+    const marketingUrl = '/ui-blocks/marketing'
+    if (!urls.includes(marketingUrl)) {
+      console.log(`📌  Adding missing URL: ${marketingUrl}`)
+      urls.push(marketingUrl)
+    }
+
     const count = process.env.COUNT || urls.length
     for (let i = 0; i < count; i++) {
       const url = urls[i]
@@ -459,7 +653,7 @@ function debugLog(...args) {
     if (process.env.BUILDINDEX === '1') {
       const preview = replaceTokens(html)
       console.log('⏳  Saving preview page... this may take awhile')
-      await savePageAndResources('/components', preview, $)
+      await savePageAndResources('/ui-blocks', preview, $)
       fs.copyFileSync(
         _path.join(process.cwd(), 'previewindex.html'),
         `${output}/preview/index.html`,
@@ -477,6 +671,71 @@ function debugLog(...args) {
       `${output}/assets.json`,
       JSON.stringify(newAssets, null, 2),
     )
+
+    // Print summary report of downloaded files
+    console.log('\n📊 Download Summary:')
+    let totalComponents = 0
+
+    // Count components by language
+    for (const language of languages) {
+      const langPath = `${output}/${language}`
+      if (fs.existsSync(langPath)) {
+        const componentCount = countFilesRecursively(langPath)
+        console.log(`- ${language.toUpperCase()}: ${componentCount} components`)
+        totalComponents += componentCount
+      }
+    }
+
+    // Count templates if enabled
+    let templateCount = 0
+    if (process.env.TEMPLATES === '1') {
+      const templatesPath = `${output}/templates`
+      if (fs.existsSync(templatesPath)) {
+        templateCount = fs
+          .readdirSync(templatesPath)
+          .filter((file) => file.endsWith('.zip')).length
+      }
+      console.log(`- Templates: ${templateCount}`)
+    }
+
+    console.log(
+      `📑 Total: ${totalComponents} components and ${templateCount} templates`,
+    )
+    console.log(
+      `🔍 Processed ${processedCategories.size} categories and ${processedComponents} components`,
+    )
+
+    if (!forceUpdate) {
+      console.log(`🔄 Skipped ${skippedComponents} existing components`)
+    }
+
+    if (process.env.TEMPLATES === '1') {
+      console.log(`🔍 Processed ${processedTemplates} templates`)
+      if (templateCount !== processedTemplates) {
+        console.log(
+          `⚠️ Warning: Number of saved templates (${templateCount}) doesn't match processed templates (${processedTemplates})`,
+        )
+      }
+    }
+
+    // Verification check
+    if (components[0] === 'all') {
+      console.log(`✅ All categories were processed successfully`)
+    } else {
+      const missedCategories = components.filter(
+        (comp) =>
+          !Array.from(processedCategories).some((cat) =>
+            cat.includes(`/${comp}`),
+          ),
+      )
+      if (missedCategories.length > 0) {
+        console.log(
+          `⚠️ Warning: These categories might not have been processed: ${missedCategories.join(', ')}`,
+        )
+      } else {
+        console.log(`✅ All requested categories were processed successfully`)
+      }
+    }
   } catch (err) {
     console.error('‼️  ', err)
     return 1
