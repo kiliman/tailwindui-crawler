@@ -21,6 +21,7 @@
     "dotenv": "^16.4.5",
     "dotenv-expand": "^11.0.6",
     "form-urlencoded": "^6.1.5",
+    "glob": "^8.1.0",
     "string.prototype.matchall": "^4.0.11"
   },
   "bin": "./index.mjs",

@@ -8,7 +8,7 @@
 
 <img src="./images/tailwindui-crawler.png">
 
-This script will crawl the [tailwindui.com](https://tailwindui.com) website and download all the
+This script will crawl the [tailwindcss.com/plus](https://tailwindcss.com/plus) website and download all the
 components to the `./output` folder.
 
 ## 🛠 How to use
@@ -30,6 +30,10 @@ COMPONENTS=(all|marketing,application-ui,ecommerce)
 BUILDINDEX=(0 | 1)
 # TEMPLATES download template files
 TEMPLATES=(0 | 1)
+# FORCE_UPDATE force update existing components
+FORCE_UPDATE=(0 | 1)
+# DEBUG enable debug logging
+DEBUG=(0 | 1)
 ```
 
 > NOTE: The tool uses [dotenv-expand](https://github.com/motdotla/dotenv-expand)
@@ -43,7 +47,7 @@ TEMPLATES=(0 | 1)
 
 Then finally, run `yarn start` or `npm start`
 
-The script will login to [tailwindui.com](https://tailwindui.com) with your credentials, and download all the
+The script will login to [tailwindcss.com/plus](https://tailwindcss.com/plus) with your credentials, and download all the
 components as individual files in the `./output` folder.
 
 ## 🤔 What's it for?
@@ -53,29 +57,27 @@ private repo, and by running this periodically, you can see exactly which files 
 or changed. Hopefully, some time in the future, they will open up a private repo for those
 that have purchased the library.
 
-## 🚀 New v4.0
+## 🚀 New v5.0
 
-The crawler has been updated to support the new Tailwind UI site as of 2022-06-27. You can
-also download the new Page Templates. Add `TEMPLATES=1` to your _.env_ file. If you are using the GitHub action to crawl, you will need to update your deploy.yml. See instructions below.
+The crawler has been updated to support the new Tailwind Plus site structure (tailwindcss.com/plus) as of 2024. It includes support for downloading all marketing UI blocks and properly handles the new component structure.
 
-The crawler now supports the new Tailwind UI site and can download HTML, React
-and Vue versions of the components.
+### New Features:
 
-You can also download the "alpine" version of the components. ⚠️ WARNING: the
-alpine code is **NOT** production ready. It does not support accesibility and
-is used to show a preview of how the component interactivity can be implemented.
-
-It also adds the ability to generate an index page that emulates the [tailwindui.com](https://tailwindui.com) website
-so you can browse components offline.
+- Support for the new Tailwind Plus URL structure
+- Enhanced component naming for React components (generates descriptive names based on the component path)
+- Added `FORCE_UPDATE` option to overwrite existing components
+- Improved debugging with the `DEBUG` environment variable
+- Component skipping to avoid re-downloading existing components
+- Detailed summary statistics after download completes
 
 ### 🗂 Preview page
 
 You can set the `.env` key `BUILDINDEX=1` to have the crawler generate an index file similar to the components
-page on [tailwindui.com](https://tailwindui.com). Install and run the [serve](https://www.npmjs.com/package/serve) package
+page on [tailwindcss.com/plus](https://tailwindcss.com/plus). Install and run the [serve](https://www.npmjs.com/package/serve) package
 to view the index.
 
 > NOTE: The HTML Preview does not apply transformers. It's a copy of the
-> component site on [tailwindui.com](https://tailwindui.com).
+> component site on [tailwindcss.com/plus](https://tailwindcss.com/plus).
 
 ```bash
 yarn global add serve
@@ -93,6 +95,8 @@ LANGUAGES=html,react,vue,alpine
 COMPONENTS=marketing,application-ui
 BUILDINDEX=1
 TEMPLATES=1
+FORCE_UPDATE=0
+DEBUG=0
 ```
 
 ## 🤖 Automatically keep a **private** GitHub Repository up-to-date
@@ -147,13 +151,17 @@ You can automatically keep a **private** GitHub repository up-to-date with compo
 
 To be emailed whenever there is a change to a component, simply setup [GitHub Notifications](https://help.github.com/en/github/administering-a-repository/about-email-notifications-for-pushes-to-your-repository#enabling-email-notifications-for-pushes-to-your-repository) on your repository.
 
-## 🚦 Upgrading to v3.
+## 🚦 Upgrading to v5.
 
-This is a major change. Unfortunately, v2 will no longer work with the existing
-site due to the updates they may to add support for React/Vue components. Please also note that the [GitHub Action](#-automatically-keep-a-private-github-repository-up-to-date) has been updated from `v1.0.0` to `v1.1.0`.
+This is a major change that supports the new Tailwind Plus site structure. The crawler now downloads components from [tailwindcss.com/plus](https://tailwindcss.com/plus) instead of the old tailwindui.com site.
 
-Currently, there is no support for transformers, as the need for them is not
-as critical since the components don't need to be converted to React or Vue.
+New features:
+
+- Better React component naming based on component paths
+- Skipping existing components for faster updates
+- Option to force update with FORCE_UPDATE=1
+- Enhanced debug output with DEBUG=1
+- Support for marketing components and all UI blocks
 
 NOTE: Since this script is essentially screen scraping, there's the potential
 of it breaking if the HTML structure changes. I will do my best to keep it in sync with
