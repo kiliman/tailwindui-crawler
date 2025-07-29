@@ -242,7 +242,8 @@ function getCookieHeader(cookies) {
 
 async function processComponentPage(url) {
   const html = await downloadPage(url)
-  if (!html.includes(process.env.EMAIL)) {
+
+  if (!html.includes('id="app"') || !html.includes('data-page')) {
     console.log(`🚫   Not logged in`)
     process.exit()
   }
@@ -441,8 +442,13 @@ async function saveLanguageContent(path, language, code) {
     }
   }
 
-  console.log(`📝  Writing ${language} ${filename}.${ext}`)
-  fs.writeFileSync(filePath, code)
+  // Only write if we have valid code content
+  if (code && code.trim()) {
+    console.log(`📝  Writing ${language} ${filename}.${ext}`)
+    fs.writeFileSync(filePath, code)
+  } else {
+    console.log(`⚠️  Skipping ${language} ${filename}.${ext} - no content`)
+  }
 }
 
 async function savePageAndResources(url, html, $) {
@@ -500,7 +506,12 @@ async function login() {
     password: process.env.PASSWORD,
     remember: false,
   })
-  return response.status === 409 || response.status === 302
+
+  return (
+    response.status === 409 ||
+    response.status === 302 ||
+    response.status === 200
+  )
 }
 
 async function saveTemplates() {
