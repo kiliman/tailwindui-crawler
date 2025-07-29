@@ -242,7 +242,9 @@ function getCookieHeader(cookies) {
 
 async function processComponentPage(url) {
   const html = await downloadPage(url)
-  if (!html.includes(process.env.EMAIL)) {
+  
+  // Check for authentication by looking for expected app structure instead of email
+  if (!html.includes('id="app"') || !html.includes('data-page')) {
     console.log(`🚫   Not logged in`)
     process.exit()
   }
@@ -253,19 +255,13 @@ async function processComponentPage(url) {
   const $ = cheerio.load(html)
   // component data stored in #app data-page attribute
   const json = $('#app').attr('data-page')
-  console.log(`Debug: url = ${url}`)
-  console.log(`Debug: json data = ${json ? 'found' : 'not found'}`)
 
   if (!json) {
     console.log('🚫   No component data found')
-    console.log('Debug: HTML structure:')
-    console.log($('body').html().slice(0, 500)) // Get a sample of the HTML
     return {}
   }
 
   const data = JSON.parse(json)
-  console.log(`Debug: data structure:`, Object.keys(data))
-  console.log(`Debug: props structure:`, Object.keys(data.props || {}))
 
   if (
     !data.props ||
@@ -282,11 +278,6 @@ async function processComponentPage(url) {
       components.length === 1 ? '' : 's'
     }`,
   )
-
-  // Debug the structure of the first component
-  if (components.length > 0) {
-    console.log(`Debug: first component structure:`, Object.keys(components[0]))
-  }
 
   for (let i = 0; i < components.length; i++) {
     await processComponent(url, components[i])
@@ -316,21 +307,6 @@ async function processComponent(url, component) {
   // Track this component
   processedComponents++
 
-  // Log component structure in debug mode
-  if (process.env.DEBUG === '1') {
-    console.log(`Debug: Processing component: ${title}`)
-    console.log(
-      `Debug: Component snippet:`,
-      component.snippet ? 'present' : 'missing',
-    )
-    if (component.snippet) {
-      console.log(`Debug: Snippet keys:`, Object.keys(component.snippet))
-      // Log available languages in the snippet
-      console.log(`Debug: Snippet language:`, component.snippet.language)
-      console.log(`Debug: All available snippet properties:`, component.snippet)
-    }
-  }
-
   // Check if component has a snippet property
   if (component.snippet) {
     const snippet = component.snippet
@@ -340,13 +316,11 @@ async function processComponent(url, component) {
 
     // Save the code if the language is in our requested languages list
     if (snippetLanguage && languages.includes(snippetLanguage)) {
-      console.log(`Debug: Saving ${snippetLanguage} code for ${title}`)
       saveLanguageContent(path, snippetLanguage, snippet.code)
     }
 
     // Also save as react/jsx if available and react is in our languages list
     if (snippetLanguage === 'jsx' && languages.includes('react')) {
-      console.log(`Debug: Saving react code for ${title}`)
       saveLanguageContent(path, 'react', snippet.code)
     }
   }
@@ -396,16 +370,6 @@ async function saveLanguageContent(path, language, code) {
     language === 'react' ? 'jsx' : language === 'alpine' ? 'html' : language
   const dir = `${output}/${language}${dirname(path)}`
 
-  if (process.env.DEBUG === '1') {
-    console.log(`Debug: Saving language content for ${language}`)
-    console.log(`Debug: Directory: ${dir}`)
-    console.log(`Debug: Path: ${path}`)
-    console.log(`Debug: Has code: ${code ? 'yes' : 'no'}`)
-    if (code) {
-      console.log(`Debug: Code length: ${code.length}`)
-    }
-  }
-
   ensureDirExists(dir)
 
   const filename = basename(path)
@@ -428,21 +392,18 @@ async function saveLanguageContent(path, language, code) {
         'export default function Example()',
         `export default function ${componentName}()`,
       )
-
-      if (process.env.DEBUG === '1') {
-        console.log(`Debug: Renamed component to ${componentName}`)
-      }
     } else if (code.includes('function Example()')) {
       code = code.replace('function Example()', `function ${componentName}()`)
-
-      if (process.env.DEBUG === '1') {
-        console.log(`Debug: Renamed component to ${componentName}`)
-      }
     }
   }
 
-  console.log(`📝  Writing ${language} ${filename}.${ext}`)
-  fs.writeFileSync(filePath, code)
+  // Only write if we have valid code content
+  if (code && code.trim()) {
+    console.log(`📝  Writing ${language} ${filename}.${ext}`)
+    fs.writeFileSync(filePath, code)
+  } else {
+    console.log(`⚠️  Skipping ${language} ${filename}.${ext} - no content`)
+  }
 }
 
 async function savePageAndResources(url, html, $) {
@@ -500,7 +461,8 @@ async function login() {
     password: process.env.PASSWORD,
     remember: false,
   })
-  return response.status === 409 || response.status === 302
+  
+  return response.status === 409 || response.status === 302 || response.status === 200
 }
 
 async function saveTemplates() {
@@ -556,11 +518,6 @@ async function saveTemplates() {
   }
 }
 
-function debugLog(...args) {
-  if (process.env.DEBUG === '1') {
-    console.log(...args)
-  }
-}
 
 function countFilesRecursively(dirPath) {
   let count = 0
@@ -608,12 +565,9 @@ function countFilesRecursively(dirPath) {
     const links = $('.grid a')
     let urls = []
 
-    debugLog(`📣  Found ${links.length} links`)
-
     for (let i = 0; i < links.length; i++) {
       const link = links[i]
       const url = $(link).attr('href')
-      debugLog(`📣   ${i + 1}: ${url}`)
       if (!url || !url.match(/\/ui-blocks\//)) continue
 
       // check if component is in list of components to save
