@@ -204,6 +204,7 @@ function parseSetCookieHeaders(setCookieHeaders) {
 
 async function downloadPage(url) {
   if (!url.startsWith(rootUrl)) url = rootUrl + url
+  url = url.replace('/plus/plus/', '/plus/')
 
   const response = await fetchWithRetry(url, retries)
   const html = await response.text()
