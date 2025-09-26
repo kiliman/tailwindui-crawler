@@ -639,8 +639,10 @@ function countFilesRecursively(dirPath) {
       )
         continue
 
-      // Make sure it's a full URL, if not prepend rootUrl
-      if (url.startsWith('/')) {
+      // Normalize URL to remove any leading /plus if present
+      if (url.startsWith('/plus/')) {
+        urls.push(url.replace('/plus', ''))
+      } else if (url.startsWith('/')) {
         urls.push(url)
       } else if (url.includes('/ui-blocks/')) {
         urls.push(url.replace('https://tailwindcss.com/plus', ''))
