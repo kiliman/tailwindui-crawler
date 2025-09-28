@@ -221,6 +221,7 @@ async function postData(url, data) {
     {
       method: 'POST',
       headers: {
+        'X-Requested-With': 'XMLHttpRequest',
         'content-type': 'application/json',
         'content-length': Buffer.byteLength(body),
         cookie: getCookieHeader(cookies),
