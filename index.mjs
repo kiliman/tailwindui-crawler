@@ -570,7 +570,11 @@ async function savePageAndResources(url, html, $) {
       }
     }
 
-    const response = await fetchWithRetry(rootUrl + url, retries, options)
+    // Handle asset URLs that start with /plus-assets to avoid duplicate /plus
+    const fetchUrl = url.startsWith('/plus-assets')
+      ? `https://tailwindcss.com${url}`
+      : `${rootUrl}${url}`
+    const response = await fetchWithRetry(fetchUrl, retries, options)
     // check etag
     if (response.status === 304) {
       continue
