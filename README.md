@@ -23,7 +23,7 @@ PASSWORD=yourpassword
 # OUTPUT optional, defaults to ./output
 OUTPUT=/path/to/output
 # LANGUAGES defaults to html
-LANGUAGES=html,react,vue,alpine
+LANGUAGES=html,react,vue
 # COMPONENTS commma-delimited list (defaults to all)
 COMPONENTS=(all|marketing,application-ui,ecommerce)
 # BUILDINDEX generate index file to view components offline
@@ -91,7 +91,7 @@ serve
 EMAIL=******
 PASSWORD=******
 OUTPUT=$HOME/Projects/tailwindui
-LANGUAGES=html,react,vue,alpine
+LANGUAGES=html,react,vue
 COMPONENTS=marketing,application-ui
 BUILDINDEX=1
 TEMPLATES=1

@@ -354,27 +354,6 @@ async function processComponent(url, component) {
 
   // save resources required by snippet preview
   const html = component.iframeHtml
-  // if languages contains alpine, then save the preview as alpine
-  if (languages.includes('alpine') && html) {
-    const $body = cheerio.load(html)('body')
-    // default code to body
-    let code = $body.html().trim()
-    // strip empty wrapper divs if present
-    let $container = findFirstElementWithClass($body.children().first())
-
-    if ($container) {
-      code = $container.parent().html().trim()
-    }
-
-    const disclaimer = `<!--
-  This example requires Tailwind CSS v2.0+
-
-  The alpine.js code is *NOT* production ready and is included to preview
-  possible interactivity
--->
-`
-    saveLanguageContent(path, 'alpine', `${disclaimer}${code}`)
-  }
 
   await savePageAndResources(url, null, cheerio.load(html || ''))
 }
@@ -393,9 +372,8 @@ function findFirstElementWithClass($elem) {
 }
 
 async function saveLanguageContent(path, language, code) {
-  const ext =
-    language === 'react' ? 'jsx' : language === 'alpine' ? 'html' : language
-  const dir = `${output}/${language}${dirname(path)}`
+    const ext = language === 'react' ? 'jsx' : language
+    const dir = `${output}/${language}${dirname(path)}`
 
   if (process.env.DEBUG === '1') {
     console.log(`Debug: Saving language content for ${language}`)
