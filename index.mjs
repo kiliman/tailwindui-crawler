@@ -238,14 +238,6 @@ async function putData(url, data) {
 
   const body = JSON.stringify(data)
 
-  if (process.env.DEBUG === '1') {
-    console.log(`Debug: PUT request to ${url}`)
-    console.log(`Debug: PUT body: ${body}`)
-    console.log(
-      `Debug: XSRF token: ${cookies['XSRF-TOKEN'] ? 'present' : 'missing'}`,
-    )
-  }
-
   return fetchHttps(
     url,
     {
@@ -285,14 +277,6 @@ async function setComponentLanguage(uuid, language) {
       snippet_lang: snippetLang,
     })
 
-    if (process.env.DEBUG === '1') {
-      console.log(`Debug: Language API response status: ${response.status}`)
-      const responseText = await response.text()
-      console.log(
-        `Debug: Language API response body: ${responseText.slice(0, 200)}`,
-      )
-    }
-
     // Check for various success status codes (including redirects)
     if (
       response.status === 200 ||
@@ -303,9 +287,16 @@ async function setComponentLanguage(uuid, language) {
       return true
     }
 
-    console.log(
+    console.error(
       `⚠️  Language API returned status ${response.status} for ${language}`,
     )
+    if (process.env.DEBUG === '1') {
+      const responseText = await response.text()
+      console.log(
+        `Debug: Language API response body: ${responseText.slice(0, 200)}`,
+      )
+    }
+
     return false
   } catch (error) {
     console.log(`❌ Error setting language ${language}: ${error.message}`)
@@ -383,8 +374,12 @@ async function processComponentPage(url) {
   }
 
   const data = JSON.parse(json)
-  console.log(`Debug: data structure:`, Object.keys(data))
-  console.log(`Debug: props structure:`, Object.keys(data.props || {}))
+  if (process.env.DEBUG === '1') {
+    console.log(`Debug: data structure keys: [${Object.keys(data).join(',')}]`)
+    console.log(
+      `Debug: props structure keys: [${Object.keys(data.props || {}).join(',')}]`,
+    )
+  }
 
   if (
     !data.props ||
@@ -404,7 +399,11 @@ async function processComponentPage(url) {
 
   // Debug the structure of the first component
   if (components.length > 0) {
-    console.log(`Debug: first component structure:`, Object.keys(components[0]))
+    if (process.env.DEBUG === '1') {
+      console.log(
+        `Debug: first component structure keys: [${Object.keys(components[0]).join(',')}]`,
+      )
+    }
   }
 
   for (let i = 0; i < components.length; i++) {
@@ -437,15 +436,9 @@ async function processComponent(url, component) {
 
   // Log component structure in debug mode
   if (process.env.DEBUG === '1') {
-    console.log(`Debug: Processing component: ${title}`)
     console.log(
-      `Debug: Component snippet:`,
-      component.snippet ? 'present' : 'missing',
+      `Debug: Processing "${title}" | snippet: ${component.snippet ? 'present' : 'missing'} | ${component.snippet ? `keys: [${Object.keys(component.snippet).join(',')}] | uuid: ${component.uuid}` : 'no data'}`,
     )
-    if (component.snippet) {
-      console.log(`Debug: Snippet keys:`, Object.keys(component.snippet))
-      console.log(`Debug: Component UUID:`, component.uuid)
-    }
   }
 
   // Check if component has UUID for language switching
@@ -507,13 +500,9 @@ async function saveLanguageContent(path, language, code) {
   const dir = `${output}/${language}${dirname(path)}`
 
   if (process.env.DEBUG === '1') {
-    console.log(`Debug: Saving language content for ${language}`)
-    console.log(`Debug: Directory: ${dir}`)
-    console.log(`Debug: Path: ${path}`)
-    console.log(`Debug: Has code: ${code ? 'yes' : 'no'}`)
-    if (code) {
-      console.log(`Debug: Code length: ${code.length}`)
-    }
+    console.log(
+      `Debug: Saving ${language} | ${path} | ${code ? `${code.length} chars` : 'no code'} | ${dir}`,
+    )
   }
 
   ensureDirExists(dir)
@@ -538,16 +527,8 @@ async function saveLanguageContent(path, language, code) {
         'export default function Example()',
         `export default function ${componentName}()`,
       )
-
-      if (process.env.DEBUG === '1') {
-        console.log(`Debug: Renamed component to ${componentName}`)
-      }
     } else if (code.includes('function Example()')) {
       code = code.replace('function Example()', `function ${componentName}()`)
-
-      if (process.env.DEBUG === '1') {
-        console.log(`Debug: Renamed component to ${componentName}`)
-      }
     }
   }
 
