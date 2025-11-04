@@ -277,6 +277,42 @@ async function setComponentLanguage(uuid, language) {
   return response.status === 200
 }
 
+async function fetchUpdatedComponent(url, uuid) {
+  try {
+    // Re-fetch the component page to get updated data
+    const html = await downloadPage(url)
+    const $ = cheerio.load(html)
+    const json = $('#app').attr('data-page')
+
+    if (!json) {
+      console.log(`⚠️  No component data found when re-fetching ${url}`)
+      return null
+    }
+
+    const data = JSON.parse(json)
+    if (!data.props?.subcategory?.components) {
+      console.log(`⚠️  No components found in re-fetched data for ${url}`)
+      return null
+    }
+
+    // Find the component with matching UUID
+    const component = data.props.subcategory.components.find(
+      (c) => c.uuid === uuid,
+    )
+    if (!component) {
+      console.log(
+        `⚠️  Component with UUID ${uuid} not found in re-fetched data`,
+      )
+      return null
+    }
+
+    return component
+  } catch (error) {
+    console.log(`❌ Error re-fetching component data: ${error.message}`)
+    return null
+  }
+}
+
 function getCookieHeader(cookies) {
   return (
     Object.entries(cookies)
@@ -372,35 +408,48 @@ async function processComponent(url, component) {
     )
     if (component.snippet) {
       console.log(`Debug: Snippet keys:`, Object.keys(component.snippet))
-      // Log available languages in the snippet
-      console.log(`Debug: Snippet language:`, component.snippet.language)
-      console.log(`Debug: All available snippet properties:`, component.snippet)
+      console.log(`Debug: Component UUID:`, component.uuid)
     }
   }
 
-  // Check if component has a snippet property
-  if (component.snippet) {
-    const snippet = component.snippet
+  // Check if component has UUID for language switching
+  if (!component.uuid) {
+    console.log(
+      `⚠️  No UUID found for component ${title}, skipping multi-language support`,
+    )
+    return
+  }
 
-    // Get the language from the snippet
-    const snippetLanguage = snippet.language?.toLowerCase()
+  // Process each requested language
+  for (const language of languages) {
+    console.log(`🔄 Processing ${title} in ${language}...`)
 
-    // Save the code if the language is in our requested languages list
-    if (snippetLanguage && languages.includes(snippetLanguage)) {
-      console.log(`Debug: Saving ${snippetLanguage} code for ${title}`)
-      saveLanguageContent(path, snippetLanguage, snippet.code)
+    // Set the language for this component
+    const success = await setComponentLanguage(component.uuid, language)
+    if (!success) {
+      console.log(`❌ Failed to set language ${language} for ${title}`)
+      continue
     }
 
-    // Also save as react/jsx if available and react is in our languages list
-    if (snippetLanguage === 'jsx' && languages.includes('react')) {
-      console.log(`Debug: Saving react code for ${title}`)
-      saveLanguageContent(path, 'react', snippet.code)
+    // Re-fetch the component page to get updated snippet data
+    const updatedComponent = await fetchUpdatedComponent(url, component.uuid)
+    if (!updatedComponent || !updatedComponent.snippet) {
+      console.log(`❌ Failed to fetch ${language} code for ${title}`)
+      continue
+    }
+
+    // Save the language-specific code
+    const snippet = updatedComponent.snippet
+    if (snippet.code && snippet.code.trim()) {
+      console.log(`✅ Saving ${language} code for ${title}`)
+      await saveLanguageContent(path, language, snippet.code)
+    } else {
+      console.log(`⚠️  No code content for ${language} version of ${title}`)
     }
   }
 
   // save resources required by snippet preview
   const html = component.iframeHtml
-
   await savePageAndResources(url, null, cheerio.load(html || ''))
 }
 
@@ -418,8 +467,8 @@ function findFirstElementWithClass($elem) {
 }
 
 async function saveLanguageContent(path, language, code) {
-    const ext = language === 'react' ? 'jsx' : language
-    const dir = `${output}/${language}${dirname(path)}`
+  const ext = language === 'react' ? 'jsx' : language
+  const dir = `${output}/${language}${dirname(path)}`
 
   if (process.env.DEBUG === '1') {
     console.log(`Debug: Saving language content for ${language}`)
