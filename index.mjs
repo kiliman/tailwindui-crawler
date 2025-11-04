@@ -106,6 +106,7 @@ let oldAssets = {}
 let newAssets = {}
 const regexEmail = new RegExp(process.env.EMAIL.replace(/[.@]/g, '\\$&'), 'g')
 let cookies = {}
+let xInertiaVersion = null
 // Component tracking
 let processedCategories = new Set()
 let processedComponents = 0
@@ -249,6 +250,7 @@ async function putData(url, data) {
         Cookie: getCookieHeader(cookies),
         'X-Requested-With': 'XMLHttpRequest',
         'X-Inertia': 'true',
+        'X-Inertia-Version': xInertiaVersion,
         'X-XSRF-TOKEN': cookies['XSRF-TOKEN'],
       },
     },
@@ -589,7 +591,23 @@ async function savePageAndResources(url, html, $) {
 }
 
 async function login() {
-  await downloadPage('/login')
+  const loginPageHtml = await downloadPage('/login')
+
+  // Extract Inertia version from the login page data-page attribute
+  const $ = cheerio.load(loginPageHtml)
+  const json = $('#app').attr('data-page')
+  if (json) {
+    try {
+      const data = JSON.parse(json)
+      xInertiaVersion = data.version
+    } catch (err) {
+      console.log('⚠️  Failed to parse login page data:', err.message)
+    }
+  }
+
+  if (process.env.DEBUG === '1') {
+    console.log(`Debug: Extracted Inertia version: ${xInertiaVersion}`)
+  }
 
   const response = await postData('/login', {
     email: process.env.EMAIL,
