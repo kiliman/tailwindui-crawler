@@ -238,16 +238,26 @@ async function putData(url, data) {
 
   const body = JSON.stringify(data)
 
+  if (process.env.DEBUG === '1') {
+    console.log(`Debug: PUT request to ${url}`)
+    console.log(`Debug: PUT body: ${body}`)
+    console.log(
+      `Debug: XSRF token: ${cookies['XSRF-TOKEN'] ? 'present' : 'missing'}`,
+    )
+  }
+
   return fetchHttps(
     url,
     {
       method: 'PUT',
       headers: {
-        'content-type': 'application/json',
-        'content-length': Buffer.byteLength(body),
-        cookie: getCookieHeader(cookies),
-        'x-inertia': 'true',
-        'x-xsrf-token': cookies['XSRF-TOKEN'],
+        Accept: 'text/html, application/xhtml+xml',
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(body),
+        Cookie: getCookieHeader(cookies),
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-Inertia': 'true',
+        'X-XSRF-TOKEN': cookies['XSRF-TOKEN'],
       },
     },
     body,
@@ -274,6 +284,14 @@ async function setComponentLanguage(uuid, language) {
       uuid: uuid,
       snippet_lang: snippetLang,
     })
+
+    if (process.env.DEBUG === '1') {
+      console.log(`Debug: Language API response status: ${response.status}`)
+      const responseText = await response.text()
+      console.log(
+        `Debug: Language API response body: ${responseText.slice(0, 200)}`,
+      )
+    }
 
     return response.status === 200
   } catch (error) {
