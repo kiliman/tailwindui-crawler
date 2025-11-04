@@ -233,6 +233,50 @@ async function postData(url, data) {
   )
 }
 
+async function putData(url, data) {
+  if (!url.startsWith(rootUrl)) url = rootUrl + url
+
+  const body = JSON.stringify(data)
+
+  return fetchHttps(
+    url,
+    {
+      method: 'PUT',
+      headers: {
+        'content-type': 'application/json',
+        'content-length': Buffer.byteLength(body),
+        cookie: getCookieHeader(cookies),
+        'x-inertia': 'true',
+        'x-xsrf-token': cookies['XSRF-TOKEN'],
+      },
+    },
+    body,
+  )
+}
+
+async function setComponentLanguage(uuid, language) {
+  const languageMap = {
+    html: 'html-v4-system',
+    react: 'react-v4-system',
+    vue: 'vue-v4-system',
+  }
+
+  const snippetLang = languageMap[language]
+  if (!snippetLang) {
+    console.log(`⚠️  Unknown language: ${language}`)
+    return false
+  }
+
+  console.log(`🔄  Setting language to ${language} for component ${uuid}`)
+
+  const response = await putData('/ui-blocks/language', {
+    uuid: uuid,
+    snippet_lang: snippetLang,
+  })
+
+  return response.status === 200
+}
+
 function getCookieHeader(cookies) {
   return (
     Object.entries(cookies)
