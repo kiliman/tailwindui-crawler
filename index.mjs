@@ -269,12 +269,17 @@ async function setComponentLanguage(uuid, language) {
 
   console.log(`🔄  Setting language to ${language} for component ${uuid}`)
 
-  const response = await putData('/ui-blocks/language', {
-    uuid: uuid,
-    snippet_lang: snippetLang,
-  })
+  try {
+    const response = await putData('/ui-blocks/language', {
+      uuid: uuid,
+      snippet_lang: snippetLang,
+    })
 
-  return response.status === 200
+    return response.status === 200
+  } catch (error) {
+    console.log(`❌ Error setting language ${language}: ${error.message}`)
+    return false
+  }
 }
 
 async function fetchUpdatedComponent(url, uuid) {
