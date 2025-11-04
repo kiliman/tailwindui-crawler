@@ -293,7 +293,20 @@ async function setComponentLanguage(uuid, language) {
       )
     }
 
-    return response.status === 200
+    // Check for various success status codes (including redirects)
+    if (
+      response.status === 200 ||
+      response.status === 204 ||
+      response.status === 302 ||
+      response.status === 303
+    ) {
+      return true
+    }
+
+    console.log(
+      `⚠️  Language API returned status ${response.status} for ${language}`,
+    )
+    return false
   } catch (error) {
     console.log(`❌ Error setting language ${language}: ${error.message}`)
     return false
