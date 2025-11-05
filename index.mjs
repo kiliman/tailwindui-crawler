@@ -549,11 +549,11 @@ async function savePageAndResources(url, html, $) {
   const items = $('head>link,script,img')
   for (let i = 0; i < items.length; i++) {
     const $item = $(items[i])
-    const url = $item.attr('src') || $item.attr('href')
-    if (!url || !url.startsWith('/')) continue
+    const assetUrl = $item.attr('src') || $item.attr('href')
+    if (!assetUrl || !assetUrl.startsWith('/')) continue
 
     // strip off querystring
-    const path = new URL(rootUrl + url).pathname
+    const path = new URL(rootUrl + assetUrl).pathname
     const dir = `${output}/preview${dirname(path)}`
     const filePath = `${dir}/${basename(path)}`
     // check assets to see if we've already downloaded this file
@@ -572,9 +572,9 @@ async function savePageAndResources(url, html, $) {
     }
 
     // Handle asset URLs that start with /plus-assets to avoid duplicate /plus
-    const fetchUrl = url.startsWith('/plus-assets')
-      ? `${baseUrl}${url}`
-      : `${rootUrl}${url}`
+    const fetchUrl = assetUrl.startsWith('/plus-assets')
+      ? `${baseUrl}${assetUrl}`
+      : `${rootUrl}${assetUrl}`
     const response = await fetchWithRetry(fetchUrl, retries, options)
     // check etag
     if (response.status === 304) {
