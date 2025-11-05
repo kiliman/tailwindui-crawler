@@ -284,6 +284,8 @@ async function setComponentLanguage(uuid, language) {
     if (
       response.status === 200 ||
       response.status === 204 ||
+      // The API returns 303 (See Other) to indicate successful language change
+      // This follows the Post-Redirect-Get pattern for state-changing operations
       response.status === 302 ||
       response.status === 303
     ) {
