@@ -94,6 +94,7 @@ export function mergeDeep(target, source) {
 }
 
 const rootUrl = 'https://tailwindcss.com/plus'
+const baseUrl = new URL(rootUrl).origin
 const output = process.env.OUTPUT || './output'
 // list of languages to save (defaults to html)
 const languages = (process.env.LANGUAGES || 'html').split(',')
@@ -572,7 +573,7 @@ async function savePageAndResources(url, html, $) {
 
     // Handle asset URLs that start with /plus-assets to avoid duplicate /plus
     const fetchUrl = url.startsWith('/plus-assets')
-      ? `https://tailwindcss.com${url}`
+      ? `${baseUrl}${url}`
       : `${rootUrl}${url}`
     const response = await fetchWithRetry(fetchUrl, retries, options)
     // check etag
@@ -756,7 +757,7 @@ function countFilesRecursively(dirPath) {
       } else if (url.startsWith('/')) {
         urls.push(url)
       } else if (url.includes('/ui-blocks/')) {
-        urls.push(url.replace('https://tailwindcss.com/plus', ''))
+        urls.push(url.replace(rootUrl, ''))
       }
     }
 
