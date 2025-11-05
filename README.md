@@ -1,9 +1,7 @@
 # tailwindui-crawler
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-
-[![All Contributors](https://img.shields.io/badge/all_contributors-10-orange.svg?style=flat-square)](#contributors-)
-
+[![All Contributors](https://img.shields.io/badge/all_contributors-11-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 <img src="./images/tailwindui-crawler.png">
@@ -198,6 +196,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://gregbrimble.com/"><img src="https://avatars.githubusercontent.com/u/8484333?v=4?s=100" width="100px;" alt="Greg Brimble"/><br /><sub><b>Greg Brimble</b></sub></a><br /><a href="https://github.com/kiliman/tailwindui-crawler/commits?author=GregBrimble" title="Documentation">📖</a> <a href="#tool-GregBrimble" title="Tools">🔧</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/yagnik"><img src="https://avatars.githubusercontent.com/u/777296?v=4?s=100" width="100px;" alt="Yagnik"/><br /><sub><b>Yagnik</b></sub></a><br /><a href="https://github.com/kiliman/tailwindui-crawler/commits?author=yagnik" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://debeijer.io/"><img src="https://avatars.githubusercontent.com/u/71566757?v=4?s=100" width="100px;" alt="idebeijer"/><br /><sub><b>idebeijer</b></sub></a><br /><a href="https://github.com/kiliman/tailwindui-crawler/commits?author=idebeijer" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Barabazs/"><img src="https://avatars.githubusercontent.com/u/31799121?v=4?s=100" width="100px;" alt="Barabazs"/><br /><sub><b>Barabazs</b></sub></a><br /><a href="https://github.com/kiliman/tailwindui-crawler/commits?author=Barabazs" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
