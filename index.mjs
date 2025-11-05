@@ -632,7 +632,7 @@ async function login() {
 async function saveTemplates() {
   const html = await downloadPage('/templates')
   const $ = cheerio.load(html)
-  const $templates = $('section[id^="product"]')
+  const $templates = $('div[id^="browse"] section')
   console.log(
     `🔍  Found ${$templates.length} template${
       $templates.length === 1 ? '' : 's'
@@ -640,7 +640,7 @@ async function saveTemplates() {
   )
   for (let i = 0; i < $templates.length; i++) {
     const $template = $($templates[i])
-    const $link = $template.find('h2>a')
+    const $link = $template.find('h3>a')
     const title = $link.text()
     const url = $link.attr('href')
     console.log(`🔍  Downloading template ${title}`)
